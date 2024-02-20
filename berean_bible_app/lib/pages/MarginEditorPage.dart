@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:berean_bible_app/widgets/MarginEditorContent.dart';
 import 'package:berean_bible_app/widgets/BibleBottomNavBar.dart';
-
+import 'package:berean_bible_app/main.dart';
 
 class MarginEditorPage extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class _MarginEditorPageState extends State<MarginEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Column(
       // Column is also a layout widget. It takes a list of children and
       // arranges them vertically. By default, it sizes itself to fit its
@@ -29,6 +31,15 @@ class _MarginEditorPageState extends State<MarginEditorPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(child: MarginEditorContent()),
+        SafeArea(
+          child: ElevatedButton(
+            onPressed: () {
+              // Accessing MyHomePage state from MyApp state and calling _changePage function
+              Provider.of<MyAppState>(context, listen: false).changePage(1);
+            },
+            child: Text('Go to Bible Reader Page'),
+          ),
+        ),
         SafeArea(
           child: BibleBottomNavBar()
         )

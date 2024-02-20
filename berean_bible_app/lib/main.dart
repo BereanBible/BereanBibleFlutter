@@ -27,7 +27,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  late PageController pageController = PageController(initialPage: 0);
+
+  void changePage(int pageIndex) {
+    pageController.animateToPage(
+      pageIndex,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
+    /*DEBUG*/print("Snapped to new pag via _changePage()");
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   final String title;
@@ -39,36 +50,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late PageController _pageController;
-  int _currentPageIndex = 0;
+  late MyAppState appState;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _currentPageIndex);
-    _pageController.addListener(_handlePageChange);
+    appState = Provider.of<MyAppState>(context, listen: false);
+    appState.pageController.addListener(_handlePageChange);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    appState.pageController.dispose();
     super.dispose();
   }
 
   void _handlePageChange() {
-    setState(() {
-      _currentPageIndex = _pageController.page!.round();
-    });
-    /*DEBUG*/print(_currentPageIndex);
-  }
-
-  void _changePage(int pageIndex) {
-    _pageController.animateToPage(
-      pageIndex,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.ease,
-    );
-    /*DEBUG*/print("Snapped to new pag via _changePage()");
+    setState(() {});
+    /*DEBUG*/print(appState.pageController.page!.round());
   }
 
   @override
@@ -83,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
             // Main Mobile View
             return PageView(
-              controller: _pageController,
+              controller: appState.pageController,
               physics: PageScrollPhysics(parent: BouncingScrollPhysics()),
               children: [
                 MarginEditorPage(),
