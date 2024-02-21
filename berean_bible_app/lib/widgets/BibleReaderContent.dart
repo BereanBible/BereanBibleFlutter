@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:berean_bible_app/BibleReference.dart';
 
 class BibleReaderContent extends StatefulWidget {
   @override
@@ -6,7 +7,7 @@ class BibleReaderContent extends StatefulWidget {
 }
 
 class _BibleReaderContentState extends State<BibleReaderContent> {
-  var reference = "";
+  BibleReference reference = BibleReference(1, 1);
 
   @override
   Widget build(BuildContext context) {

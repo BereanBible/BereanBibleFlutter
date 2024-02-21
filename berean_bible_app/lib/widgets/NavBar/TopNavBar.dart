@@ -16,8 +16,6 @@ class TopNavBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _TopNavBarState extends State<TopNavBar> {
-  var reference = "";
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
@@ -74,9 +72,9 @@ class TopNavBarTitle extends StatelessWidget {
     return Consumer<MyAppState>(
       builder: (context, appState, child) {
         return (appState.getPage() == 0) ? 
-          Text("Margin Title 0")
+          MarginTitle()
           :
-          Text("Bible Title 1");
+          BibleReferenceNavigator();
       },
     );
   }

@@ -1,3 +1,4 @@
+import 'package:berean_bible_app/BibleReference.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:berean_bible_app/main.dart';
@@ -8,10 +9,11 @@ class BibleReferenceNavigator extends StatefulWidget {
 }
 
 class _BibleReferenceNavigatorState extends State<BibleReferenceNavigator> {
-  var reference = "";
+  late BibleReference reference;
 
   @override
   Widget build(BuildContext context) {
-    return Text("1 John 1:1");
+    reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
+    return Text(reference.book() + " " + reference.chapter.toString());
   }
 }

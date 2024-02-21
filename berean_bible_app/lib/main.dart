@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/pages/BibleReaderPage.dart';
 import 'package:berean_bible_app/pages/MarginEditorPage.dart';
+import 'package:berean_bible_app/BibleReference.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +49,9 @@ class MyAppState extends ChangeNotifier {
       return 0;
     }
   }
+
+  BibleReference readerReference = BibleReference(1, 1);
+  BibleReference getReaderRef() => readerReference;
 }
 
 class MyHomePage extends StatefulWidget {
