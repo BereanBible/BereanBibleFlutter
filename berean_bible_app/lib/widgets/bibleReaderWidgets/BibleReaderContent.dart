@@ -11,13 +11,32 @@ class BibleReaderContent extends StatefulWidget {
 
 class _BibleReaderContentState extends State<BibleReaderContent> {
   late BibleReference reference;
+  late Future<String> passage;
 
   @override
   Widget build(BuildContext context) {
     reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
+    passage = getPassage(reference);
     return Scaffold(
       body: Center(
-        child: Text(getPassage(reference)),
+        child: FutureBuilder<String>(
+          future: passage,
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('Select Reference');
+              case ConnectionState.active:
+              case ConnectionState.waiting:
+                return CircularProgressIndicator();
+              case ConnectionState.done:
+                if (snapshot.hasError){
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text('Passage: ${snapshot.data}');
+                }
+            }
+          },
+        ),
       ),
     );
   }
