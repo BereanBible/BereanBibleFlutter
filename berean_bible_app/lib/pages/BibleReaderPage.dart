@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:berean_bible_app/widgets/BibleReaderContent.dart';
-import 'package:berean_bible_app/widgets/BibleBottomNavBar.dart';
+import 'package:berean_bible_app/widgets/bibleReaderWidgets/BibleReaderContent.dart';
+import 'package:berean_bible_app/widgets/bibleReaderWidgets/BibleBottomNavBar.dart';
 import 'package:berean_bible_app/main.dart';
 
 class BibleReaderPage extends StatefulWidget {

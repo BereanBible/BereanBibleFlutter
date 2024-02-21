@@ -1,4 +1,4 @@
-import 'package:berean_bible_app/widgets/NavBar/TopNavBar.dart';
+import 'package:berean_bible_app/widgets/navBarWidgets/TopNavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';

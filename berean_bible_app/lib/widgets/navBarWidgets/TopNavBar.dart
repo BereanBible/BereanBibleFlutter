@@ -1,5 +1,5 @@
-import 'package:berean_bible_app/widgets/NavBar/BibleReferenceNavigator.dart';
-import 'package:berean_bible_app/widgets/NavBar/MarginTitle.dart';
+import 'package:berean_bible_app/widgets/navBarWidgets/BibleReferenceNavigator.dart';
+import 'package:berean_bible_app/widgets/navBarWidgets/MarginTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
