@@ -14,6 +14,6 @@ class _BibleReferenceNavigatorState extends State<BibleReferenceNavigator> {
   @override
   Widget build(BuildContext context) {
     reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
-    return Text(reference.book() + " " + reference.chapter.toString());
+    return Text(reference.toString());
   }
 }
