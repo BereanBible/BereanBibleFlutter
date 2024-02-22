@@ -54,6 +54,10 @@ class MyAppState extends ChangeNotifier {
 
   BibleReference readerReference = BibleReference(1, 1, 0);
   BibleReference getReaderRef() => readerReference;
+
+  void setReference(BibleReference r) {
+    readerReference = r;
+  }
 }
 
 class MyHomePage extends StatefulWidget {
