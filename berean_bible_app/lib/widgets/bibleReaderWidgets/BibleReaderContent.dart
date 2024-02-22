@@ -33,7 +33,15 @@ class _BibleReaderContentState extends State<BibleReaderContent> {
                 if (snapshot.hasError){
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return Text('Passage: ${snapshot.data.toString()}');
+                  return SingleChildScrollView(
+                    child: Padding(padding: EdgeInsets.all(15.0),
+                      child: Wrap(
+                        children: <Widget>[
+                          Text(snapshot.data.toString())
+                        ]
+                      )
+                    )
+                  );
                 }
             }
           },

@@ -10,7 +10,7 @@ class BiblePassage {
   @override
   String toString() {
     // TODO: implement toString
-    String strForm = (reference.toString() + "--\n");
+    String strForm = "";
     for (var v in verses) {
       strForm += v.reference.verseNum.toString() + " " + v.verseText + " ";
     }

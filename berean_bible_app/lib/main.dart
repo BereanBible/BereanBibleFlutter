@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _handlePageChange() {
     setState(() {});
-    /*DEBUG*/print(appState.pageController.page!.round());
+    //*DEBUG*/print(appState.pageController.page!.round());
   }
 
   @override
