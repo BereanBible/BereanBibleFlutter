@@ -10,11 +10,14 @@ class BibleReaderPage extends StatefulWidget {
   State<BibleReaderPage> createState() => _BibleReaderPageState();
 }
 
-class _BibleReaderPageState extends State<BibleReaderPage> {
+class _BibleReaderPageState extends State<BibleReaderPage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    
+    super.build(context); // Needed for AutomaticKeepAliveClientMixin
+
     return ResponsiveBuilder(builder: (context, sizingInformation) {
       return Column(
         // Column is also a layout widget. It takes a list of children and

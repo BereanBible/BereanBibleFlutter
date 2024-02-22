@@ -10,14 +10,20 @@ class BibleReaderContent extends StatefulWidget {
   State<BibleReaderContent> createState() => _BibleReaderContentState();
 }
 
-class _BibleReaderContentState extends State<BibleReaderContent> {
+class _BibleReaderContentState extends State<BibleReaderContent> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   late BibleReference reference;
   late Future<BiblePassage> passage;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Needed for AutomaticKeepAliveClientMixin
+
     reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
     passage = getPassage(reference);
+    
     return Scaffold(
       body: Center(
         child: FutureBuilder<BiblePassage>(

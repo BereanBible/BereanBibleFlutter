@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  late PageController pageController = PageController(initialPage: 0);
+  late PageController pageController = PageController(initialPage: 0, keepPage: true);
+  ValueNotifier<int> pageIndexNotifier = ValueNotifier<int>(0);
 
   void changePage(int pageIndex) {
     pageController.animateToPage(
@@ -38,6 +39,7 @@ class MyAppState extends ChangeNotifier {
       duration: const Duration(milliseconds: 500),
       curve: Curves.ease,
     );
+    pageIndexNotifier.value = pageIndex;
     notifyListeners();
     /*DEBUG*/print("Snapped to new pag via _changePage()");
   }
@@ -80,8 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handlePageChange() {
-    setState(() {});
-    //*DEBUG*/print(appState.pageController.page!.round());
+    appState.pageIndexNotifier.value = appState.getPage();
   }
 
   @override

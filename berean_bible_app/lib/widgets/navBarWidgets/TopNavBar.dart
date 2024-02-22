@@ -18,33 +18,38 @@ class TopNavBar extends StatefulWidget implements PreferredSizeWidget {
 class _TopNavBarState extends State<TopNavBar> {
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-        builder: (context, sizingInformation) {
-          if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
-            // Main Mobile View
-            return AppBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              leading: LeftButton(),
-              title: TopNavBarTitle(),
-              actions: [
-                SettingsButton(),
-              ],
-            );
-          } else {
-            // Desktop View
-            return AppBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              leading: MarginFolderButton(),
-              title: Row(
-                children: [MarginTitle(), BibleReferenceNavigator()]
-              ),
-              actions: [
-                SettingsButton(),
-              ],
-            );
-          }
-        },
-      );
+    return ValueListenableBuilder<int>(
+      valueListenable: Provider.of<MyAppState>(context).pageIndexNotifier,
+      builder: (context, value, child) {
+        return ResponsiveBuilder(
+          builder: (context, sizingInformation) {
+            if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
+              // Main Mobile View
+              return AppBar(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                leading: LeftButton(),
+                title: TopNavBarTitle(),
+                actions: [
+                  SettingsButton(),
+                ],
+              );
+            } else {
+              // Desktop View
+              return AppBar(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                leading: MarginFolderButton(),
+                title: Row(
+                  children: [MarginTitle(), BibleReferenceNavigator()]
+                ),
+                actions: [
+                  SettingsButton(),
+                ],
+              );
+            }
+          },
+        ); // Rebuilds whenever the pageController changes
+      },
+    );
   }
 }
 
