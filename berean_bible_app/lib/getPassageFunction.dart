@@ -1,17 +1,33 @@
-import 'package:berean_bible_app/BibleReference.dart';
+import 'package:berean_bible_app/classes/BibleReference.dart';
+import 'package:berean_bible_app/classes/BibleVerse.dart';
+import 'package:berean_bible_app/classes/BiblePassage.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<String> getPassage(BibleReference ref) async {
-  await Future.delayed(Duration(seconds: 2));
-  return ("Default getPassage() return: ref=" + ref.toString());
+Future<BiblePassage> getPassage(BibleReference ref) async {  
+  String url = 'https://bible-api.com/';
+  url += ref.book() + " " + ref.chapter.toString() + ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : ""); // Format refrence for the API's url schema;
+  Map jsonData = await _fetchURL(url);
+
+  final verses = <BibleVerse>[];
+
+  final jsonVerses = jsonData['verses'] as List<dynamic>;
+
+  for (var v in jsonVerses) {
+    BibleReference vRef = BibleReference(ref.bookNum, ref.chapter, v['verse']);
+    String vText = v['text'].trim();
+    verses.add(BibleVerse(vRef, vText));
+  }
+
+  return BiblePassage(ref, verses);
 }
 
-Future<String> _fetchURL(String url) async {
+Future<Map> _fetchURL(String url) async {
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return response.body.toString();
+    return json.decode(response.body);
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
