@@ -1,3 +1,4 @@
+import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/BibleReferenceNavigator.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/MarginTitle.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _TopNavBarState extends State<TopNavBar> {
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 leading: MarginFolderButton(),
                 title: Row(
-                  children: [MarginTitle(), BibleReferenceNavigator()]
+                  children: [MarginTitle(), BibleReferenceNavigatorWrapper()]
                 ),
                 actions: [
                   SettingsButton(),
@@ -79,12 +80,25 @@ class TopNavBarTitle extends StatelessWidget {
         return (appState.getPage() == 0) ? 
           MarginTitle()
           :
-          BibleReferenceNavigator();
+          BibleReferenceNavigatorWrapper();
       },
     );
   }
 }
 
+
+
+class BibleReferenceNavigatorWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: Provider.of<MyAppState>(context).readerReference,
+      builder: (context, BibleReference value, child) {
+        return BibleReferenceNavigator(reference: value);
+      }
+    );
+  }
+}
 
 
 class SettingsButton extends StatelessWidget {

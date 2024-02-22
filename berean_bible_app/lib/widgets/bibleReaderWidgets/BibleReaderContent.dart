@@ -1,11 +1,13 @@
 import 'package:berean_bible_app/classes/BiblePassage.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:berean_bible_app/classes/BibleReference.dart';
-import 'package:berean_bible_app/main.dart';
 import 'package:berean_bible_app/functions/getPassageFunction.dart';
 
 class BibleReaderContent extends StatefulWidget {
+  final BibleReference reference;
+
+  BibleReaderContent({required this.reference});
+
   @override
   State<BibleReaderContent> createState() => _BibleReaderContentState();
 }
@@ -14,15 +16,31 @@ class _BibleReaderContentState extends State<BibleReaderContent> with AutomaticK
   @override
   bool get wantKeepAlive => true;
 
-  late BibleReference reference;
+  late BibleReference _reference;
   late Future<BiblePassage> passage;
+
+  @override
+  void initState() {
+    super.initState();
+    _reference = widget.reference;
+  }
+
+  @override
+  void didUpdateWidget(covariant BibleReaderContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.reference != oldWidget.reference) {
+      setState(() {
+        _reference = widget.reference;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context); // Needed for AutomaticKeepAliveClientMixin
 
-    reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
-    passage = getPassage(reference);
+    // reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
+    passage = getPassage(_reference);
     
     return Scaffold(
       body: Center(
