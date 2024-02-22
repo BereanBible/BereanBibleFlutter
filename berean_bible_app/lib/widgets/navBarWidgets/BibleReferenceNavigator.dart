@@ -1,4 +1,4 @@
-import 'package:berean_bible_app/BibleReference.dart';
+import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:berean_bible_app/main.dart';
@@ -14,6 +14,6 @@ class _BibleReferenceNavigatorState extends State<BibleReferenceNavigator> {
   @override
   Widget build(BuildContext context) {
     reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
-    return Text(reference.toString());
+    return Text(reference.book() + " " + reference.chapter.toString());
   }
 }

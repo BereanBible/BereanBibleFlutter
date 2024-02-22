@@ -1,9 +1,9 @@
 class BibleReference {
   int bookNum;
   int chapter;
-  int verse;
+  int verseNum;
   
-  BibleReference(this.bookNum, this.chapter, {this.verse = 0});
+  BibleReference(this.bookNum, this.chapter, this.verseNum);
 
   String book() {
     String bookName;
@@ -19,7 +19,7 @@ class BibleReference {
   @override
   String toString() {
     // TODO: implement toString
-    String strForm = book() + " " + chapter.toString() + ((verse!=0)? (":"+verse.toString()) : "");
+    String strForm = book() + " " + chapter.toString() + ((verseNum!=0)? (":"+verseNum.toString()) : "");
     return strForm;
   }
 }

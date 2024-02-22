@@ -1,6 +1,7 @@
+import 'package:berean_bible_app/classes/BiblePassage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:berean_bible_app/BibleReference.dart';
+import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/main.dart';
 import 'package:berean_bible_app/getPassageFunction.dart';
 
@@ -11,7 +12,7 @@ class BibleReaderContent extends StatefulWidget {
 
 class _BibleReaderContentState extends State<BibleReaderContent> {
   late BibleReference reference;
-  late Future<String> passage;
+  late Future<BiblePassage> passage;
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +20,9 @@ class _BibleReaderContentState extends State<BibleReaderContent> {
     passage = getPassage(reference);
     return Scaffold(
       body: Center(
-        child: FutureBuilder<String>(
+        child: FutureBuilder<BiblePassage>(
           future: passage,
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<BiblePassage> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 return Text('Select Reference');
@@ -32,7 +33,7 @@ class _BibleReaderContentState extends State<BibleReaderContent> {
                 if (snapshot.hasError){
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return Text('Passage: ${snapshot.data}');
+                  return Text('Passage: ${snapshot.data.toString()}');
                 }
             }
           },
