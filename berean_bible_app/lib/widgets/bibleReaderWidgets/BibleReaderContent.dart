@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/main.dart';
-import 'package:berean_bible_app/getPassageFunction.dart';
+import 'package:berean_bible_app/functions/getPassageFunction.dart';
 
 class BibleReaderContent extends StatefulWidget {
   @override

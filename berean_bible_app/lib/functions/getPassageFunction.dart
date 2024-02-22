@@ -1,12 +1,13 @@
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/classes/BibleVerse.dart';
 import 'package:berean_bible_app/classes/BiblePassage.dart';
+import 'package:berean_bible_app/functions/bibleUtilFunctions.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<BiblePassage> getPassage(BibleReference ref) async {  
   String url = 'https://bible-api.com/';
-  url += ref.book() + " " + ref.chapter.toString() + ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : ""); // Format refrence for the API's url schema;
+  url += getBookName(ref.bookNum) + " " + ref.chapter.toString() + ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : ""); // Format refrence for the API's url schema;
   Map jsonData = await _fetchURL(url);
 
   final verses = <BibleVerse>[];
