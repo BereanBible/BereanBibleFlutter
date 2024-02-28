@@ -1,5 +1,5 @@
 import 'package:berean_bible_app/classes/BiblePassage.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/getPassageFunction.dart';
 
@@ -42,8 +42,8 @@ class _BibleReaderContentState extends State<BibleReaderContent> with AutomaticK
     // reference = Provider.of<MyAppState>(context, listen: false).getReaderRef();
     passage = getPassage(_reference);
     
-    return Scaffold(
-      body: Center(
+    return CupertinoPageScaffold(
+      child: Center(
         child: FutureBuilder<BiblePassage>(
           future: passage,
           builder: (BuildContext context, AsyncSnapshot<BiblePassage> snapshot) {
@@ -52,7 +52,7 @@ class _BibleReaderContentState extends State<BibleReaderContent> with AutomaticK
                 return Text('Select Reference');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return CircularProgressIndicator();
+                return CupertinoActivityIndicator();
               case ConnectionState.done:
                 if (snapshot.hasError){
                   return Text('Error: ${snapshot.error}');

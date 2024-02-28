@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class MarginEditorContent extends StatefulWidget {
   @override
@@ -10,8 +10,8 @@ class _MarginEditorContentState extends State<MarginEditorContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return CupertinoPageScaffold(
+      child: Center(
         child: Text('Margin Home Page'),
       ),
     );

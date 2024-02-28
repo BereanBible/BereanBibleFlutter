@@ -1,19 +1,26 @@
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/BibleReferenceNavigator.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/MarginTitle.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/main.dart';
 
-class TopNavBar extends StatefulWidget implements PreferredSizeWidget {
-  // TopNavBar({required Key key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
+class TopNavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
+  final String? title;
 
-  @override
-  final Size preferredSize = Size.fromHeight(kToolbarHeight); // default is 56.0
+  const TopNavBar({Key? key, this.title}) : super(key: key);
 
   @override
   _TopNavBarState createState() => _TopNavBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(44.0); // Manually setting height
+
+  @override
+  bool shouldFullyObstruct(BuildContext context) {
+    return true;
+  }
 }
 
 class _TopNavBarState extends State<TopNavBar> {
@@ -26,25 +33,21 @@ class _TopNavBarState extends State<TopNavBar> {
           builder: (context, sizingInformation) {
             if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
               // Main Mobile View
-              return AppBar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
+              return CupertinoNavigationBar(
+                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
                 leading: LeftButton(),
-                title: TopNavBarTitle(),
-                actions: [
-                  SettingsButton(),
-                ],
+                middle: TopNavBarTitle(),
+                trailing: SettingsButton(),
               );
             } else {
               // Desktop View
-              return AppBar(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
+              return CupertinoNavigationBar(
+                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
                 leading: MarginFolderButton(),
-                title: Row(
+                middle: Row(
                   children: [MarginTitle(), BibleReferenceNavigatorWrapper()]
                 ),
-                actions: [
-                  SettingsButton(),
-                ],
+                trailing: SettingsButton(),
               );
             }
           },
@@ -64,7 +67,7 @@ class LeftButton extends StatelessWidget {
         return (appState.getPage() == 0) ? 
           MarginFolderButton()
           :
-          IconButton(icon: const Icon(Icons.circle), tooltip: 'Nothing', onPressed: () {print("Nothing");});
+          BibleAaButton();
       },
     );
   }
@@ -104,9 +107,11 @@ class BibleReferenceNavigatorWrapper extends StatelessWidget {
 class SettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.settings),
-      tooltip: 'Settings',
+    return CupertinoButton(
+      child: Icon(
+        CupertinoIcons.settings, 
+        color: CupertinoTheme.of(context).primaryContrastingColor
+      ),
       onPressed: () {
         print("Hi");
       },
@@ -114,16 +119,31 @@ class SettingsButton extends StatelessWidget {
   }
 }
 
-
-
 class MarginFolderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.folder),
-      tooltip: 'Open Margin',
+    return CupertinoButton(
+      child: Icon(
+        CupertinoIcons.folder,
+        color: CupertinoTheme.of(context).primaryContrastingColor,
+      ),
       onPressed: () {
         print("MarginFolderPressed");
+      },
+    );
+  }
+}
+
+class BibleAaButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      child: Icon(
+        CupertinoIcons.textformat_abc,
+        color: CupertinoTheme.of(context).primaryContrastingColor,
+      ), 
+      onPressed: () {
+        print("BibleAaButton pressed");
       },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/bibleUtilFunctions.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class BibleReferenceNavigator extends StatefulWidget {
   final BibleReference reference;

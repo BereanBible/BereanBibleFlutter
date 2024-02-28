@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/widgets/marginWidgets/MarginEditorContent.dart';
@@ -21,14 +21,14 @@ class _MarginEditorPageState extends State<MarginEditorPage> {
           Expanded(child: MarginEditorContent()),
           (sizingInformation.deviceScreenType != DeviceScreenType.desktop) ? 
             SafeArea(
-              child: ElevatedButton(
-                    onPressed: () {
-                      // Accessing MyHomePage state from MyApp state and calling _changePage function
-                      if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
-                        Provider.of<MyAppState>(context, listen: false).changePage(1);
-                      }
-                    },
-                    child: Text('Go to Bible Reader Page'),
+              child: /*DEBUG*/CupertinoButton(
+                onPressed: () {
+                  // Accessing MyHomePage state from MyApp state and calling _changePage function
+                  if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
+                    Provider.of<MyAppState>(context, listen: false).changePage(1);
+                  }
+                },
+                child: Text('Go to Bible Reader Page'),
               ),
             )
           :

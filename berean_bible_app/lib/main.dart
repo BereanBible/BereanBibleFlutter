@@ -1,5 +1,5 @@
 import 'package:berean_bible_app/widgets/navBarWidgets/TopNavBar.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/pages/BibleReaderPage.dart';
@@ -17,11 +17,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
-      child: MaterialApp(
+      child: CupertinoApp(
         title: 'Berean Bible App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.lightBlue),
+        theme: CupertinoThemeData(
+          primaryColor: CupertinoColors.black,
+          primaryContrastingColor: CupertinoColors.white,
+          barBackgroundColor: CupertinoColors.black,
+          scaffoldBackgroundColor: Color.fromARGB(200, 30, 30, 30),
         ),
         home: MyHomePage(title: 'Berean Bible Home Page'),
       ),
@@ -92,9 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: TopNavBar(),
-      body: ResponsiveBuilder(
+    return CupertinoPageScaffold(
+      navigationBar: TopNavBar(),
+      child: ResponsiveBuilder(
         builder: (context, sizingInformation) {
           if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
             // Main Mobile View
