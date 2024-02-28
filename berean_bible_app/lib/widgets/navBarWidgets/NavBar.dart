@@ -6,13 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/main.dart';
 
-class TopNavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
+class NavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
   final String? title;
 
-  const TopNavBar({Key? key, this.title}) : super(key: key);
+  const NavBar({Key? key, this.title}) : super(key: key);
 
   @override
-  _TopNavBarState createState() => _TopNavBarState();
+  _NavBarState createState() => _NavBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(44.0); // Manually setting height
@@ -23,7 +23,7 @@ class TopNavBar extends StatefulWidget implements ObstructingPreferredSizeWidget
   }
 }
 
-class _TopNavBarState extends State<TopNavBar> {
+class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
@@ -103,7 +103,6 @@ class BibleReferenceNavigatorWrapper extends StatelessWidget {
   }
 }
 
-
 class SettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -113,7 +112,7 @@ class SettingsButton extends StatelessWidget {
         color: CupertinoTheme.of(context).primaryContrastingColor
       ),
       onPressed: () {
-        print("Hi");
+        print("Settings Button Pressed");
       },
     );
   }
@@ -124,7 +123,7 @@ class MarginFolderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       child: Icon(
-        CupertinoIcons.folder,
+        CupertinoIcons.folder_circle,
         color: CupertinoTheme.of(context).primaryContrastingColor,
       ),
       onPressed: () {
@@ -139,7 +138,7 @@ class BibleAaButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoButton(
       child: Icon(
-        CupertinoIcons.textformat_abc,
+        CupertinoIcons.textformat,
         color: CupertinoTheme.of(context).primaryContrastingColor,
       ), 
       onPressed: () {

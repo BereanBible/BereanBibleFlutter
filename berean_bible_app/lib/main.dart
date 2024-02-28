@@ -1,4 +1,4 @@
-import 'package:berean_bible_app/widgets/navBarWidgets/TopNavBar.dart';
+import 'package:berean_bible_app/widgets/navBarWidgets/NavBar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: TopNavBar(),
+      navigationBar: NavBar(),
       child: ResponsiveBuilder(
         builder: (context, sizingInformation) {
           if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {

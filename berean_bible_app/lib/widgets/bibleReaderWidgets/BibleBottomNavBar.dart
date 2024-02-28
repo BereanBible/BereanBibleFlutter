@@ -39,7 +39,7 @@ class _BibleBottomNavBarState extends State<BibleBottomNavBar> {
       child: Row(children: [
         CupertinoButton(
           child: Icon(
-            CupertinoIcons.back,
+            CupertinoIcons.arrowshape_turn_up_left_circle_fill,
             color: CupertinoTheme.of(context).primaryContrastingColor,
           ),
           onPressed: () {
@@ -57,7 +57,7 @@ class _BibleBottomNavBarState extends State<BibleBottomNavBar> {
         Spacer(),
         CupertinoButton(
           child: Icon(
-            CupertinoIcons.forward,
+            CupertinoIcons.arrowshape_turn_up_right_circle_fill,
             color: CupertinoTheme.of(context).primaryContrastingColor,
           ),
           onPressed: () {
