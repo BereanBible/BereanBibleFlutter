@@ -49,7 +49,7 @@ class _BibleBottomNavBarState extends State<BibleBottomNavBar> {
               newRef.chapter--;
             } else if (ref.bookNum > 1) {
               newRef.bookNum--;
-              newRef.chapter = getNumChapters((ref.bookNum)-1);
+              newRef.chapter = getNumChapters((ref.bookNum) - 1);
             }
             Provider.of<MyAppState>(context, listen: false).setReference(newRef);  
           },
