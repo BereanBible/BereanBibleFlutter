@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-and-deploy:
@@ -13,17 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get Flutter version
-        id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v2
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+          flutter-version: '3.19.0'
 
       - name: Build app
         run: flutter build web
+        working-directory: ./berean_bible_app
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
