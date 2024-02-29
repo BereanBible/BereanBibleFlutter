@@ -99,6 +99,7 @@ class _RefSelectorState extends State<RefSelector> {
               showPastRef = true;
           });
         },
+        placeholder: '',
         onSubmitted: (String value) {
           int? bookNum = getBookNum(value);
           if (bookNum != null) {
