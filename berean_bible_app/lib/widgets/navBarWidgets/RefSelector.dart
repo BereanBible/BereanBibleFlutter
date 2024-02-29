@@ -24,10 +24,25 @@ class RefSelector extends StatefulWidget {
 class _RefSelectorState extends State<RefSelector> {
   late BibleReference _reference;
 
+  int selectedBookInt = 1;
+  bool showPrevRef = true;
+
+  bool showingTextEntry = false;
+  FocusNode _textEntryFocusNode = FocusNode();
+
+  var _textEntryController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _reference = widget._currentReference;
+    _textEntryFocusNode.addListener(() {
+      if (showingTextEntry) {
+        _textEntryFocusNode.requestFocus();
+      } else {
+        _textEntryFocusNode.unfocus();
+      }
+    });
   }
 
   @override
@@ -40,12 +55,10 @@ class _RefSelectorState extends State<RefSelector> {
     }
   }
   
-  int selectedBookInt = 1;
-  bool showPrevRef = true;
-  bool showingTextEntry = false;
-  FocusNode _textEntryFocusNode = FocusNode();
-
   void _showDialog(Widget child) {
+    showPrevRef = false;
+    /*DEBUG*/print('Unfocusing');
+    _textEntryFocusNode.unfocus();
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => Container(
@@ -67,12 +80,20 @@ class _RefSelectorState extends State<RefSelector> {
       // Handle book choice
       _bookWasChosen();
     });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      _textEntryFocusNode.unfocus();
+    });
   }
 
   void _bookWasChosen() {
     // Handle book choice
     setState(() {
       showingTextEntry = false;
+      _textEntryController.clear();
+      _textEntryFocusNode.unfocus();
+      showPrevRef = true;
+      // DEBUG: WORKHEREFIRST: fix this to dismiss the text input when the popup is open
     });
     /*DEBUG*/print('Book was chosen');
   }
@@ -89,7 +110,9 @@ class _RefSelectorState extends State<RefSelector> {
     return Stack(children: <Widget>[
 
       // Text Entry:
-      (showingTextEntry) ? Container(child: CupertinoSearchTextField(
+      OutlineBox(child:
+      Container(child: CupertinoTextField(
+        controller: _textEntryController,
         focusNode: _textEntryFocusNode,
         onChanged: (String value) {
           setState(() {
@@ -99,7 +122,6 @@ class _RefSelectorState extends State<RefSelector> {
               showPrevRef = true;
           });
         },
-        placeholder: '',
         onSubmitted: (String value) {
           int? bookNum = getBookNum(value);
           if (bookNum != null) {
@@ -114,10 +136,17 @@ class _RefSelectorState extends State<RefSelector> {
             /*DEBUG*/print('No book found for: '+value);
           }
           /*DEBUG*/print('Submitted text: $value');
+          _textEntryController.clear();
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
         },
+        cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
+        maxLines: 1,
+        // placeholder: '',
       ))
-      : 
-      Container(/*Empty*/),
+      )
+      ,
 
       (showPrevRef) ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         // Book title
@@ -143,6 +172,8 @@ class _RefSelectorState extends State<RefSelector> {
                       setState(() {
                         selectedBookInt = index+1;
                         Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
+                        // _textEntryFocusNode.unfocus();
+                        _textEntryController.text = getBookName(selectedBookInt);
                       });
                       /*DEBUG*/print("Book selected: "+(selectedBookInt).toString());
                     },
@@ -161,7 +192,7 @@ class _RefSelectorState extends State<RefSelector> {
       
       ])
       :
-      Container(/*Empty*/),
+      Container(height: 1,/*Empty*/),
     ]);
   }
 }
