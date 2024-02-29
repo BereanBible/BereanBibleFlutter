@@ -1,10 +1,11 @@
 import 'package:berean_bible_app/classes/BibleReference.dart';
-import 'package:berean_bible_app/widgets/navBarWidgets/BibleReferenceNavigator.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/MarginTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/main.dart';
+import 'package:berean_bible_app/widgets/OutlineBox.dart';
+import 'package:berean_bible_app/widgets/navBarWidgets/RefSelector.dart';
 
 class NavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
   final String? title;
@@ -26,7 +27,7 @@ class NavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
 class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<int>(
+    return SafeArea(child: ValueListenableBuilder<int>(
       valueListenable: Provider.of<MyAppState>(context).pageIndexNotifier,
       builder: (context, value, child) {
         return ResponsiveBuilder(
@@ -53,7 +54,7 @@ class _NavBarState extends State<NavBar> {
           },
         ); // Rebuilds whenever the pageController changes
       },
-    );
+    ));
   }
 }
 
@@ -97,7 +98,9 @@ class BibleReferenceNavigatorWrapper extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: Provider.of<MyAppState>(context).readerReference,
       builder: (context, BibleReference value, child) {
-        return BibleReferenceNavigator(reference: value);
+        return OutlineBox(child: 
+          RefSelector(ref: value, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.systemPurple))
+        );/*BibleReferenceNavigator(reference: value);*/
       }
     );
   }

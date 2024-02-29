@@ -10,7 +10,6 @@ class RefSelector extends StatefulWidget {
     super.key,
     required BibleReference ref,
     TextStyle? formatStyle,
-    // required this.child,
   }) : _current_reference = ref, txtFormatStyle = formatStyle;
 
   final BibleReference _current_reference;
@@ -21,8 +20,26 @@ class RefSelector extends StatefulWidget {
 }
 
 class _RefSelectorState extends State<RefSelector> {
-  int selectedBookInt = 0;
-  String selectedBookStr = getBookName(1);
+  late BibleReference _reference;
+
+  @override
+  void initState() {
+    super.initState();
+    _reference = widget._current_reference;
+  }
+
+  @override
+  void didUpdateWidget(covariant RefSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget._current_reference != oldWidget._current_reference) {
+      setState(() {
+        _reference = widget._current_reference;
+      });
+    }
+  }
+  
+  int selectedBookInt = 1;
+  // String selectedBookStr = getBookName(1);
   bool showPastRef = true;
 
   void _showDialog(Widget child) {
@@ -51,6 +68,7 @@ class _RefSelectorState extends State<RefSelector> {
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       
+      // Text Entry:
       CupertinoSearchTextField(
         onChanged: (String value) {
           setState(() {
@@ -82,18 +100,19 @@ class _RefSelectorState extends State<RefSelector> {
         // Book title
         Stack(children: <Widget>[
           TextButton(
-            child: RefBookTitleTxt(ref: widget._current_reference, formatStyle: widget.txtFormatStyle),
+            child: RefBookTitleTxt(ref: _reference, formatStyle: widget.txtFormatStyle),
             onPressed: () {
               print("Bible Book Pressed");
               _showDialog(
                 
+                // Book Picker:
                 CupertinoPicker(
                   magnification: 1.22,
                   squeeze: 1.2,
                   useMagnifier: true,
                   itemExtent: 32.0,
                   scrollController: FixedExtentScrollController(
-                    initialItem: selectedBookInt,
+                    initialItem: selectedBookInt-1,
                   ),
                   onSelectedItemChanged: (int index) {
                     setState(() {
@@ -104,74 +123,17 @@ class _RefSelectorState extends State<RefSelector> {
                   },
                   children: getAllBookNames().map((item) => Text(item)).toList(),
                 )
-
-                /*Example picker*/
-                // CupertinoPicker(
-                //   magnification: 1.22,
-                //   squeeze: 1.2,
-                //   useMagnifier: true,
-                //   itemExtent: _kItemExtent,
-                //   // This sets the initial item.
-                //   scrollController: FixedExtentScrollController(
-                //     initialItem: _selectedFruit,
-                //   ),
-                //   // This is called when selected item is changed.
-                //   onSelectedItemChanged: (int selectedItem) {
-                //     setState(() {
-                //       _selectedFruit = selectedItem;
-                //     });
-                //   },
-                //   children:
-                //       List<Widget>.generate(_fruitNames.length, (int index) {
-                //     return Center(child: Text(_fruitNames[index]));
-                //   }),
-                // )
-
-
               );
             },
           )
         ]),
 
         Text(" ", style: widget.txtFormatStyle ?? TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)),
-        RefChapterNumTxt(ref: widget._current_reference, formatStyle: widget.txtFormatStyle),
+        RefChapterNumTxt(ref: _reference, formatStyle: widget.txtFormatStyle),
       
       ])
       :
       Text('pie'),
-      
-      
-      
-      // Row(
-      //   children: [
-          // Flexible(child: CupertinoPicker(
-          //   itemExtent: 32.0,
-          //   onSelectedItemChanged: (int index) {
-          //     setState(() {
-          //       selectedBookInt = index;
-          //     });
-          //   },
-          //   children: const <Widget>[
-          //     Text('Genesis'),
-          //     Text('Exodus'),
-          //     Text('Leviticus'),
-          //     Text('Numbers'),
-          //     Text('Deuteronomy'),
-          //     // Add the rest of the books here...
-          //   ],
-          // )),
-      //     TextButton( // Book button
-      //       onPressed: () {
-      //         print("Book pressed");
-      //       },
-      //       style: TextButton.styleFrom(
-      //         minimumSize: Size.zero,
-      //         padding: EdgeInsets.zero,
-      //       ),
-      //       child: RefBookTitleTxt(ref: widget._current_reference, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.activeBlue)),
-      //     )
-      //   ]
-      // )
     ])
     ;
   }
