@@ -41,7 +41,7 @@ class _RefSelectorState extends State<RefSelector> {
   }
   
   int selectedBookInt = 1;
-  bool showPastRef = true;
+  bool showPrevRef = true;
   bool showingTextEntry = false;
   FocusNode _textEntryFocusNode = FocusNode();
 
@@ -94,9 +94,9 @@ class _RefSelectorState extends State<RefSelector> {
         onChanged: (String value) {
           setState(() {
             if (value != '')
-              showPastRef = false;
+              showPrevRef = false;
             else
-              showPastRef = true;
+              showPrevRef = true;
           });
         },
         placeholder: '',
@@ -106,7 +106,7 @@ class _RefSelectorState extends State<RefSelector> {
             setState(() {
               selectedBookInt = bookNum;
               Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
-              showPastRef = true;
+              showPrevRef = true;
               /*DEBUG*/print('Ref Book updated via text entry to: '+getBookName(selectedBookInt));
               _bookWasChosen();
             });
@@ -119,7 +119,7 @@ class _RefSelectorState extends State<RefSelector> {
       : 
       Container(/*Empty*/),
 
-      (showPastRef) ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      (showPrevRef) ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         // Book title
         Stack(children: <Widget>[
           TextButton(
