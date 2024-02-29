@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/main.dart';
-import 'package:berean_bible_app/widgets/OutlineBox.dart';
+/*DEBUG*/import 'package:berean_bible_app/widgets/OutlineBox.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/RefSelector.dart';
 
 class NavBar extends StatefulWidget implements ObstructingPreferredSizeWidget {
@@ -99,7 +99,8 @@ class BibleReferenceNavigatorWrapper extends StatelessWidget {
       valueListenable: Provider.of<MyAppState>(context).readerReference,
       builder: (context, BibleReference value, child) {
         return OutlineBox(child: 
-          RefSelector(ref: value, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.systemPurple))
+          RefSelector(ref: value, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.systemPurple)),
+          c: CupertinoColors.activeGreen
         );/*BibleReferenceNavigator(reference: value);*/
       }
     );

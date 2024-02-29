@@ -2,17 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; // For the text buttons
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/bibleUtilFunctions.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:berean_bible_app/main.dart';
+/*DEBUG*/import 'package:berean_bible_app/widgets/OutlineBox.dart';
 
 class RefSelector extends StatefulWidget {
   const RefSelector({
     super.key,
     required BibleReference ref,
     TextStyle? formatStyle,
-  }) : _current_reference = ref, txtFormatStyle = formatStyle;
+  }) : _currentReference = ref, txtFormatStyle = formatStyle;
 
-  final BibleReference _current_reference;
+  final BibleReference _currentReference;
   final TextStyle? txtFormatStyle;
   
   @override
@@ -25,22 +27,23 @@ class _RefSelectorState extends State<RefSelector> {
   @override
   void initState() {
     super.initState();
-    _reference = widget._current_reference;
+    _reference = widget._currentReference;
   }
 
   @override
   void didUpdateWidget(covariant RefSelector oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget._current_reference != oldWidget._current_reference) {
+    if (widget._currentReference != oldWidget._currentReference) {
       setState(() {
-        _reference = widget._current_reference;
+        _reference = widget._currentReference;
       });
     }
   }
   
   int selectedBookInt = 1;
-  // String selectedBookStr = getBookName(1);
   bool showPastRef = true;
+  bool showingTextEntry = false;
+  FocusNode _textEntryFocusNode = FocusNode();
 
   void _showDialog(Widget child) {
     showCupertinoModalPopup<void>(
@@ -60,16 +63,34 @@ class _RefSelectorState extends State<RefSelector> {
           child: child,
         ),
       ),
-    );
+    ).then((value) {
+      // Handle book choice
+      _bookWasChosen();
+    });
   }
 
+  void _bookWasChosen() {
+    // Handle book choice
+    setState(() {
+      showingTextEntry = false;
+    });
+    /*DEBUG*/print('Book was chosen');
+  }
+
+  void activateTextEntry() {
+    setState(() {
+      showingTextEntry = true;
+      _textEntryFocusNode.requestFocus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
-      
+
       // Text Entry:
-      CupertinoSearchTextField(
+      (showingTextEntry) ? Container(child: CupertinoSearchTextField(
+        focusNode: _textEntryFocusNode,
         onChanged: (String value) {
           setState(() {
             if (value != '')
@@ -86,44 +107,50 @@ class _RefSelectorState extends State<RefSelector> {
               Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
               showPastRef = true;
               /*DEBUG*/print('Ref Book updated via text entry to: '+getBookName(selectedBookInt));
+              _bookWasChosen();
             });
           } else {
             /*DEBUG*/print('No book found for: '+value);
           }
-          
-          print('Submitted text: $value');
+          /*DEBUG*/print('Submitted text: $value');
         },
-      ),
-      
+      ))
+      : 
+      Container(/*Empty*/),
+
       (showPastRef) ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      
         // Book title
         Stack(children: <Widget>[
           TextButton(
             child: RefBookTitleTxt(ref: _reference, formatStyle: widget.txtFormatStyle),
             onPressed: () {
-              print("Bible Book Pressed");
-              _showDialog(
-                
-                // Book Picker:
-                CupertinoPicker(
-                  magnification: 1.22,
-                  squeeze: 1.2,
-                  useMagnifier: true,
-                  itemExtent: 32.0,
-                  scrollController: FixedExtentScrollController(
-                    initialItem: selectedBookInt-1,
-                  ),
-                  onSelectedItemChanged: (int index) {
-                    setState(() {
-                      selectedBookInt = index+1;
-                      Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
-                    });
-                    print("Book selected: "+(selectedBookInt).toString());
-                  },
-                  children: getAllBookNames().map((item) => Text(item)).toList(),
-                )
-              );
+              /*DEBUG*/print("Bible Book Pressed");
+              
+              if (showingTextEntry) {
+                // Display Book Picker
+                _showDialog(
+                  // Book Picker:
+                  CupertinoPicker(
+                    magnification: 1.22,
+                    squeeze: 1.2,
+                    useMagnifier: true,
+                    itemExtent: 32.0,
+                    scrollController: FixedExtentScrollController(
+                      initialItem: selectedBookInt-1,
+                    ),
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                        selectedBookInt = index+1;
+                        Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
+                      });
+                      /*DEBUG*/print("Book selected: "+(selectedBookInt).toString());
+                    },
+                    children: getAllBookNames().map((item) => Text(item)).toList(),
+                  )
+                );
+              } else {
+                activateTextEntry();
+              }
             },
           )
         ]),
@@ -133,9 +160,8 @@ class _RefSelectorState extends State<RefSelector> {
       
       ])
       :
-      Text('pie'),
-    ])
-    ;
+      Container(/*Empty*/),
+    ]);
   }
 }
 
@@ -211,70 +237,3 @@ class RefChapterNumTxt extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-// class Selector extends StatefulWidget {
-//   const Selector({
-//     super.key,
-//     required BibleReference ref,
-//     TextStyle? formatStyle,
-//     // required this.child,
-//   }) : _current_reference = ref, txtFormatStyle = formatStyle;
-
-//   final BibleReference _current_reference;
-//   final TextStyle? txtFormatStyle;
-
-//   // final Widget child;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(children: <Widget>[
-//       CupertinoSearchTextField(
-//         onChanged: (String value) {
-//           print('The text has changed to: $value');
-//         },
-//         onSubmitted: (String value) {
-//           print('Submitted text: $value');
-//         },
-//       ),
-//       Row(
-//         children: [
-//           DropdownButton<String>(
-//           value: dropdownValue,
-//           onChanged: (String? newValue) {
-//             setState(() {
-//               dropdownValue = newValue!;
-//             });
-//           },
-//           items: <String>['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'].map<DropdownMenuItem<String>>((String value) {
-//             return DropdownMenuItem<String>(
-//               value: value,
-//               child: Text(value),
-//             );
-//           }).toList(),
-//         ),
-//           TextButton( // Book button
-//             onPressed: () {
-//               print("Book pressed");
-//             },
-//             style: TextButton.styleFrom(
-//               minimumSize: Size.zero,
-//               padding: EdgeInsets.zero,
-//             ),
-//             child: RefBookTitleTxt(ref: _current_reference, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.activeBlue)),
-//           )
-//         ]
-//       )
-//     ])
-    
-//     ;
-//   }
-// }
