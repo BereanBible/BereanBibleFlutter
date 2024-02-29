@@ -22,8 +22,15 @@ jobs:
         run: flutter build web
         working-directory: ./berean_bible_app
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./berean_bible_app/build/web
+      - name: Deploy to Another Repository
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "<>"
+          git clone https://x-access-token:${{ secrets.NinjaToken }}@github.com/BereanBible/BereanBible.github.io.git
+          cp -r ./berean_bible_app/build/web/* ./BereanBible.github.io/
+          cd BereanBible.github.io
+          git add .
+          git commit -m "Update from GitHub Actions"
+          git push
+        env:
+          PAT: ${{ secrets.NinjaToken }}
