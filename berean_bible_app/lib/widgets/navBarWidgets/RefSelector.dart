@@ -23,6 +23,7 @@ class RefSelector extends StatefulWidget {
 
 class _RefSelectorState extends State<RefSelector> {
   late BibleReference _reference;
+  late BibleReference _newReference;
 
   int selectedBookInt = 1;
   bool showPrevRef = true;
@@ -36,6 +37,7 @@ class _RefSelectorState extends State<RefSelector> {
   void initState() {
     super.initState();
     _reference = widget._currentReference;
+    _newReference = BibleReference(_reference.bookNum, _reference.chapter, _reference.verseNum);
     _textEntryFocusNode.addListener(() {
       if (showingTextEntry) {
         _textEntryFocusNode.requestFocus();
@@ -51,16 +53,21 @@ class _RefSelectorState extends State<RefSelector> {
     if (widget._currentReference != oldWidget._currentReference) {
       setState(() {
         _reference = widget._currentReference;
+        _newReference = BibleReference(_reference.bookNum, _reference.chapter, _reference.verseNum);
       });
     }
   }
   
   void _showDialog(Widget child) {
     showPrevRef = false;
-    /*DEBUG*/print('Unfocusing');
-    _textEntryFocusNode.unfocus();
+
+    // /*DEBUG*/print('Unfocusing');
+    // _textEntryFocusNode.unfocus();
+    // showingTextEntry = false;
+
     showCupertinoModalPopup<void>(
       context: context,
+      barrierColor: Colors.transparent,
       builder: (BuildContext context) => Container(
         height: 216,
         padding: const EdgeInsets.only(top: 6.0),
@@ -78,24 +85,39 @@ class _RefSelectorState extends State<RefSelector> {
       ),
     ).then((value) {
       // Handle book choice
-      _bookWasChosen();
-    });
-
-    Future.delayed(Duration(milliseconds: 100), () {
-      _textEntryFocusNode.unfocus();
+      /*DEBUG*/print('Modal Dismissed');
+      if (selectedBookInt != widget._currentReference.bookNum) {
+        _bookWasChosen();
+      } else {
+        /*DEBUG*/print('Book unchanged: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
+      }
     });
   }
 
   void _bookWasChosen() {
-    // Handle book choice
+    // Add a space to the text
+    _textEntryController.text = _textEntryController.text + ' ';
+    // Move cursor to end of text
+    _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+    /*DEBUG*/print('Book was chosen');
+  }
+
+  void _refWasChosen() {
+    // Handle refrence choice
+    /*DEBUG*/print('Handling refrence with NewRef= ${_newReference}');
+    setState(() {
+      Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(_newReference.bookNum, _newReference.chapter, 0));
+    });
+
+    // Clear text field
+    _textEntryController.clear();
     setState(() {
       showingTextEntry = false;
       _textEntryController.clear();
       _textEntryFocusNode.unfocus();
       showPrevRef = true;
-      // DEBUG: WORKHEREFIRST: fix this to dismiss the text input when the popup is open
     });
-    /*DEBUG*/print('Book was chosen');
+    /*DEBUG*/print('Ref was chosen');
   }
 
   void activateTextEntry() {
@@ -110,45 +132,50 @@ class _RefSelectorState extends State<RefSelector> {
     return Stack(children: <Widget>[
 
       // Text Entry:
+      (showingTextEntry) ? 
       OutlineBox(child:
-      Container(child: CupertinoTextField(
-        controller: _textEntryController,
-        focusNode: _textEntryFocusNode,
-        onChanged: (String value) {
-          setState(() {
-            if (value != '')
-              showPrevRef = false;
-            else
-              showPrevRef = true;
-          });
-        },
-        onSubmitted: (String value) {
-          int? bookNum = getBookNum(value);
-          if (bookNum != null) {
+        Container(child: CupertinoTextField(
+          controller: _textEntryController,
+          focusNode: _textEntryFocusNode,
+          onChanged: (String value) {
             setState(() {
-              selectedBookInt = bookNum;
-              Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
-              showPrevRef = true;
-              /*DEBUG*/print('Ref Book updated via text entry to: '+getBookName(selectedBookInt));
-              _bookWasChosen();
+              if (value != '')
+                showPrevRef = false;
+              else
+                showPrevRef = true;
             });
-          } else {
-            /*DEBUG*/print('No book found for: '+value);
-          }
-          /*DEBUG*/print('Submitted text: $value');
-          _textEntryController.clear();
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-        },
-        cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
-        maxLines: 1,
-        // placeholder: '',
-      ))
+          },
+          onSubmitted: (String value) {
+            int? selectedBookNum = getBookNum(value);
+            if (selectedBookNum != null) {
+              setState(() {
+                selectedBookInt = selectedBookNum;
+                _newReference.bookNum = selectedBookInt;
+                // DEBUG OLD: Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
+                showPrevRef = true;
+                /*DEBUG*/print('NewRef Book updated via text entry to: '+getBookName(selectedBookInt));
+                /*DEBUG*/print('NewRef is: ${_newReference}');
+                _refWasChosen();
+              });
+            } else {
+              /*DEBUG*/print('No book found for: '+value);
+            }
+            /*DEBUG*/print('Submitted text: $value');
+            // Clear scrollable if needed
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          },
+          cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
+          maxLines: 1,
+          // placeholder: '',
+        ))
       )
+      :
+      Container(height: 1,/*Empty*/)
       ,
 
-      (showPrevRef) ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      (showPrevRef) ? Row(mainAxisAlignment: (showingTextEntry) ? MainAxisAlignment.start : MainAxisAlignment.center, children: [
         // Book title
         Stack(children: <Widget>[
           TextButton(
@@ -169,13 +196,19 @@ class _RefSelectorState extends State<RefSelector> {
                       initialItem: selectedBookInt-1,
                     ),
                     onSelectedItemChanged: (int index) {
+                      /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                       setState(() {
+                        /*DEBUG*/print('Check2: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                         selectedBookInt = index+1;
-                        Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
+                        /*DEBUG*/print('Check3: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
+                        _newReference.bookNum = selectedBookInt;
+                        /*DEBUG*/print('Check4: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                         // _textEntryFocusNode.unfocus();
                         _textEntryController.text = getBookName(selectedBookInt);
+                        /*DEBUG*/print("NewRef Book selected: "+(selectedBookInt).toString());
+                        /*DEBUG*/print('NewRef is: ${_newReference}');
+                        /*DEBUG*/print('Check5: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                       });
-                      /*DEBUG*/print("Book selected: "+(selectedBookInt).toString());
                     },
                     children: getAllBookNames().map((item) => Text(item)).toList(),
                   )
