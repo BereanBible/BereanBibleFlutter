@@ -72,10 +72,11 @@ var bibleBooks = {
 
 
 int? getBookNum(String bkName) {
-  int? bookNum = bibleBooks[bkName]?['bookNumber'];
+  String bkNameQuery = bkName.trimRight();
+  int? bookNum = bibleBooks[bkNameQuery]?['bookNumber'];
   if (bookNum == null) {
     for (var key in bibleBooks.keys) {
-      if (key.contains(bkName)) {
+      if (key.contains(bkNameQuery)) {
         bookNum = bibleBooks[key]?['bookNumber'];
         break; // Exit the loop after finding the first match
       }
