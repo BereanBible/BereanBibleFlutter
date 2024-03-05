@@ -26,6 +26,7 @@ class _RefSelectorState extends State<RefSelector> {
   late BibleReference _newReference;
 
   int selectedBookInt = 1;
+  int selectedChapter = 1;
   bool showPrevRef = true;
 
   bool showingTextEntry = false;
@@ -57,6 +58,27 @@ class _RefSelectorState extends State<RefSelector> {
       });
     }
   }
+
+  void setNewBook(int bkNum) {
+    setState(() {
+      selectedBookInt = bkNum;
+      _newReference.bookNum = selectedBookInt;
+    });
+  }
+
+  void setNewChapter(int ch) {
+    setState(() {
+      selectedChapter = ch;
+      _newReference.chapter = selectedChapter;
+    });
+  }
+
+  void setNewVerse(int v) { // DEBUG Omit?
+    setState(() {
+      // selectedVerse = v; // DEBUG no selectedVerse implemented
+      _newReference.verseNum = v;
+    });
+  }
   
   void _showDialog(Widget child) {
     showPrevRef = false;
@@ -84,22 +106,32 @@ class _RefSelectorState extends State<RefSelector> {
         ),
       ),
     ).then((value) {
-      // Handle book choice
+      // Handle book/chapter choice
+      
       /*DEBUG*/print('Modal Dismissed');
+      
       if (selectedBookInt != widget._currentReference.bookNum) {
         _bookWasChosen();
       } else {
         /*DEBUG*/print('Book unchanged: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
       }
+      
+      if (selectedChapter != widget._currentReference.chapter) {
+        _chapterWasChosen();
+      } else {
+        /*DEBUG*/print('Chapter unchanged: selectedChapter=${selectedChapter} == _currentReference=${widget._currentReference.chapter}');
+      }
     });
   }
 
   void _bookWasChosen() {
-    // Add a space to the text
-    _textEntryController.text = _textEntryController.text + ' ';
+    /*DEBUG*/print('Book was chosen');
+  }
+
+  void _chapterWasChosen() {
     // Move cursor to end of text
     _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-    /*DEBUG*/print('Book was chosen');
+    /*DEBUG*/print('Chapter was chosen');
   }
 
   void _refWasChosen() {
@@ -110,7 +142,6 @@ class _RefSelectorState extends State<RefSelector> {
     });
 
     // Clear text field
-    _textEntryController.clear();
     setState(() {
       showingTextEntry = false;
       _textEntryController.clear();
@@ -146,20 +177,44 @@ class _RefSelectorState extends State<RefSelector> {
             });
           },
           onSubmitted: (String value) {
-            int? selectedBookNum = getBookNum(value);
-            if (selectedBookNum != null) {
+
+            // Proccessing input
+            int lastSpace = value.lastIndexOf(' ');
+            String enteredBookStr = value.substring(0, lastSpace);
+            String chAndVerseString = value.substring(lastSpace + 1);
+
+            int? enteredBookNum = getBookNum(enteredBookStr);            
+            int? enteredChapter = null;
+            int? enteredVerse = null; // DEBUG: Remove? Unused?
+
+            if (chAndVerseString != '') { // If more than a book name was input
+              List<String> chAndVerseParts = chAndVerseString.split(':');
+              enteredChapter = int.tryParse(chAndVerseParts[0]);
+              if (chAndVerseParts.length > 1) { // If there was a ':' with something after it
+                enteredVerse = int.tryParse(chAndVerseParts[1]);
+              }
+            }
+
+            // Using input to set the new refrence
+            if (enteredBookNum != null || enteredChapter != null) {
               setState(() {
-                selectedBookInt = selectedBookNum;
-                _newReference.bookNum = selectedBookInt;
-                // DEBUG OLD: Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(selectedBookInt, 1, 0));
+                if (enteredBookNum != null) {
+                  setNewBook(enteredBookNum);
+                }
+                if (enteredChapter != null) {
+                  setNewChapter(enteredChapter);
+                }
+                if (enteredVerse != null) { // DEBUG Omit?
+                  setNewVerse(enteredVerse);
+                }
                 showPrevRef = true;
-                /*DEBUG*/print('NewRef Book updated via text entry to: '+getBookName(selectedBookInt));
-                /*DEBUG*/print('NewRef is: ${_newReference}');
+                /*DEBUG*/print('NewRef updated via text entry to: ${_newReference}');
                 _refWasChosen();
               });
             } else {
-              /*DEBUG*/print('No book found for: '+value);
+              /*DEBUG*/print('Invalid refrence: $value');
             }
+
             /*DEBUG*/print('Submitted text: $value');
             // Clear scrollable if needed
             if (Navigator.canPop(context)) {
@@ -187,30 +242,21 @@ class _RefSelectorState extends State<RefSelector> {
                 // Display Book Picker
                 _showDialog(
                   // Book Picker:
-                  CupertinoPicker(
-                    magnification: 1.22,
-                    squeeze: 1.2,
-                    useMagnifier: true,
-                    itemExtent: 32.0,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: selectedBookInt-1,
-                    ),
-                    onSelectedItemChanged: (int index) {
-                      /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
+                  ScrollPicker(
+                    onChange: (int index) {
+                      // /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                       setState(() {
-                        /*DEBUG*/print('Check2: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-                        selectedBookInt = index+1;
-                        /*DEBUG*/print('Check3: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-                        _newReference.bookNum = selectedBookInt;
-                        /*DEBUG*/print('Check4: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-                        // _textEntryFocusNode.unfocus();
-                        _textEntryController.text = getBookName(selectedBookInt);
+                        setNewBook(index+1);
+                        _textEntryController.text = getBookName(selectedBookInt) + ' ';
+                        // Move cursor to end of text
+                        _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
                         /*DEBUG*/print("NewRef Book selected: "+(selectedBookInt).toString());
                         /*DEBUG*/print('NewRef is: ${_newReference}');
                         /*DEBUG*/print('Check5: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
                       });
                     },
-                    children: getAllBookNames().map((item) => Text(item)).toList(),
+                    items: getAllBookNames().map((item) => Text(item)).toList(),
+                    initIndex: selectedBookInt-1,
                   )
                 );
               } else {
@@ -221,8 +267,43 @@ class _RefSelectorState extends State<RefSelector> {
         ]),
 
         Text(" ", style: widget.txtFormatStyle ?? TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)),
-        RefChapterNumTxt(ref: _reference, formatStyle: widget.txtFormatStyle),
-      
+        
+        // Book Chapter
+        Stack(children: <Widget>[
+          TextButton(
+            child: RefChapterNumTxt(ref: _reference, formatStyle: widget.txtFormatStyle),
+            onPressed: () {
+              /*DEBUG*/print("Bible Chapter Pressed");
+              
+              if (showingTextEntry) {
+                // Display Book Picker
+                _showDialog(
+                  // Book Picker:
+                  ScrollPicker(
+                    onChange: (int index) {
+                      // /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
+                      setState(() {
+                        int ch = index+1;
+                        setNewChapter(ch);
+                        _textEntryController.text = getBookName(selectedBookInt) + ' ' + ch.toString();
+                        // Move cursor to end of text
+                        _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+                        /*DEBUG*/print("NewRef Chapter selected: "+(selectedBookInt).toString());
+                        /*DEBUG*/print('NewRef is: ${_newReference}');
+                        /*DEBUG*/print('Check5: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
+                      });
+                    },
+                    items: List<Text>.generate(getNumChapters(selectedBookInt), (index) => Text((index + 1).toString())),
+                    initIndex: selectedBookInt-1,
+                  )
+                );
+              } else {
+                activateTextEntry();
+              }
+            },
+          )
+        ]),
+
       ])
       :
       Container(height: 1,/*Empty*/),
@@ -299,6 +380,37 @@ class RefChapterNumTxt extends StatelessWidget {
         (txtFormatStyle != null) ? txtFormatStyle : 
         TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)
       ),
+    );
+  }
+}
+
+class ScrollPicker extends StatelessWidget {
+
+  const ScrollPicker({
+    super.key,
+    required this.onChange,
+    required this.items,
+    int? initIndex,
+  }) : initI = initIndex ?? 0;
+
+  final void Function(int) onChange;
+  final List<Widget> items;
+  final int initI;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPicker(
+      magnification: 1.22,
+      squeeze: 1.2,
+      useMagnifier: true,
+      itemExtent: 32.0,
+      scrollController: FixedExtentScrollController(
+        initialItem: initI,
+      ),
+      onSelectedItemChanged: (int index) {
+        onChange(index);
+      },
+      children: items,
     );
   }
 }
