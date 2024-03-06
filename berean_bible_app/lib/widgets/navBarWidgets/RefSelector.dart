@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // For the text buttons
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/bibleUtilFunctions.dart';
@@ -28,7 +27,6 @@ class _RefSelectorState extends State<RefSelector> {
 
   int selectedBookInt = 1;
   int selectedChapter = 1;
-  bool showPrevRef = true;
 
   bool userIsTyping = false;
   FocusNode _textEntryFocusNode = FocusNode();
@@ -54,21 +52,21 @@ class _RefSelectorState extends State<RefSelector> {
     }
   }
 
-  void setNewBook(int bkNum) {
+  void _setNewBook(int bkNum) {
     setState(() {
       selectedBookInt = bkNum;
       _newReference.bookNum = selectedBookInt;
     });
   }
 
-  void setNewChapter(int ch) {
+  void _setNewChapter(int ch) {
     setState(() {
       selectedChapter = ch;
       _newReference.chapter = selectedChapter;
     });
   }
 
-  void setNewVerse(int v) { // DEBUG Omit?
+  void _setNewVerse(int v) { // DEBUG Omit?
     setState(() {
       // selectedVerse = v; // DEBUG no selectedVerse implemented
       _newReference.verseNum = v;
@@ -81,7 +79,6 @@ class _RefSelectorState extends State<RefSelector> {
       _textEntryFocusNode.requestFocus();
       _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: 0));
     });
-    /*DEBUG*/print('ACTIVATE');
   }
 
   void _deactivateTextEntry() {
@@ -90,18 +87,10 @@ class _RefSelectorState extends State<RefSelector> {
       _textEntryController.clear();
       // _textEntryController.text = _newReference.toString() + "[%]";
       _textEntryFocusNode.unfocus();
-      showPrevRef = true; // DEBUG Needed?      
     });
-    /*DEBUG*/print('DEACTIVATE');
   }
   
   void _showDialog(Widget child) {
-    showPrevRef = false;
-
-    // /*DEBUG*/print('Unfocusing');
-    // _textEntryFocusNode.unfocus();
-    // showingTextEntry = false;
-
     showCupertinoModalPopup<void>(
       context: context,
       barrierColor: Colors.transparent,
@@ -121,38 +110,17 @@ class _RefSelectorState extends State<RefSelector> {
         ),
       ),
     ).then((value) {
-      // Handle book/chapter choice
-      
-      /*DEBUG*/print('Modal Dismissed');
-      
-      // if (selectedBookInt != widget._currentReference.bookNum) {
-      //   _bookWasChosen();
-      // } else {
-      //   /*DEBUG*/print('Book unchanged: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-      // }
-      
-      // if (selectedChapter != widget._currentReference.chapter) {
-      //   _chapterWasChosen();
-      // } else {
-      //   /*DEBUG*/print('Chapter unchanged: selectedChapter=${selectedChapter} == _currentReference=${widget._currentReference.chapter}');
-      // }
+      // Handle book/chapter choice      
+      if (selectedChapter != widget._currentReference.chapter) {
+        _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+      }
     });
-  }
-
-  void _bookWasChosen() {
-    /*DEBUG*/print('Book was chosen');
-  }
-
-  void _chapterWasChosen() {
-    // Move cursor to end of text
-    _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-    /*DEBUG*/print('Chapter was chosen');
   }
 
   void _refWasChosen() {
     // Handle refrence choice
     setState(() {
-      Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(_newReference.bookNum, _newReference.chapter, 0));
+      Provider.of<MyAppState>(context, listen: false).setReference(BibleReference(_newReference.bookNum, _newReference.chapter, _newReference.verseNum));
     });
     _deactivateTextEntry(); // Clear text field
   }
@@ -221,152 +189,146 @@ class _RefSelectorState extends State<RefSelector> {
       Container(child: 
         (userIsTyping) ?
         // Text Entry:
-        OutlineBox(child:
-          Listener(
-            child: (userIsTyping) ? CupertinoTextField(
-              key: _textFieldKey,
-              controller: _textEntryController,
-              focusNode: _textEntryFocusNode,
-              placeholder: (_reference.toString()),
-              cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
-              maxLines: 1,
-              onSubmitted: (String value) {
-                /*DEBUG*/print('Submitted text: $value');
-                // Proccessing input
-                String spaceSafeInput = _procBookNames(value, true);
-                int lastSpace = spaceSafeInput.lastIndexOf(' ');
-                String enteredBookStr;
-                String chAndVerseString;
-                if (lastSpace == -1 || lastSpace == spaceSafeInput.length - 1) {
-                  // "Book" or "Book "
-                  enteredBookStr = _procBookNames(spaceSafeInput.replaceAll(' ', ''), false);
-                  chAndVerseString = "";
-                } else {
-                  // "Book Ch..."
-                  enteredBookStr = _procBookNames(spaceSafeInput.substring(0, lastSpace), false);
-                  chAndVerseString = spaceSafeInput.substring(lastSpace + 1);
-                }
-                /*DEBUG*/print("enteredBookStr=[${enteredBookStr}] chAndVerseString=[${chAndVerseString}]");
-
-                int? enteredBookNum = getBookNum(enteredBookStr);            
-                int? enteredChapter = null;
-                int? enteredVerse = null; // DEBUG: Remove? Unused?
-
-                if (chAndVerseString != '') { // If more than a book name was input
-                  List<String> chAndVerseParts = chAndVerseString.split(':');
-                  enteredChapter = int.tryParse(chAndVerseParts[0]);
-                  if (chAndVerseParts.length > 1) { // If there was a ':' with something after it
-                    enteredVerse = int.tryParse(chAndVerseParts[1]);
+        Container(
+          margin: const EdgeInsets.all(0), 
+          padding: const EdgeInsets.all(0), 
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: CupertinoTheme.of(context).scaffoldBackgroundColor), 
+            borderRadius: BorderRadius.circular(10)), 
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Listener(child: 
+                (userIsTyping) ? CupertinoTextField(
+                key: _textFieldKey,
+                controller: _textEntryController,
+                focusNode: _textEntryFocusNode,
+                placeholder: (_reference.toString()),
+                cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
+                maxLines: 1,
+                onSubmitted: (String value) {
+                  // Proccessing input
+                  String spaceSafeInput = _procBookNames(value, true);
+                  int lastSpace = spaceSafeInput.lastIndexOf(' ');
+                  String enteredBookStr;
+                  String chAndVerseString;
+                  if (lastSpace == -1 || lastSpace == spaceSafeInput.length - 1) {
+                    // "Book" or "Book "
+                    enteredBookStr = _procBookNames(spaceSafeInput.replaceAll(' ', ''), false);
+                    chAndVerseString = "";
+                  } else {
+                    // "Book Ch..."
+                    enteredBookStr = _procBookNames(spaceSafeInput.substring(0, lastSpace), false);
+                    chAndVerseString = spaceSafeInput.substring(lastSpace + 1);
                   }
-                }
 
-                // Using input to set the new refrence
-                if (enteredBookNum != null || enteredChapter != null) {
-                  setState(() {
-                    if (enteredBookNum != null) {
-                      setNewBook(enteredBookNum);
+                  int? enteredBookNum = getBookNum(enteredBookStr);            
+                  int? enteredChapter = null;
+                  int? enteredVerse = null; // DEBUG: Remove? Unused?
+
+                  if (chAndVerseString != '') { // If more than a book name was input
+                    List<String> chAndVerseParts = chAndVerseString.split(':');
+                    enteredChapter = int.tryParse(chAndVerseParts[0]);
+                    if (chAndVerseParts.length > 1) { // If there was a ':' with something after it
+                      enteredVerse = int.tryParse(chAndVerseParts[1]);
                     }
-                    if (enteredChapter != null) {
-                      setNewChapter(enteredChapter);
+                  }
+
+                  // Using input to set the new refrence
+                  if (enteredBookNum != null || enteredChapter != null) {
+                    setState(() {
+                      if (enteredBookNum != null) {
+                        _setNewBook(enteredBookNum);
+                      }
+                      if (enteredChapter != null) {
+                        _setNewChapter(enteredChapter);
+                      } else {
+                        _setNewChapter(1);
+                      }
+                      if (enteredVerse != null) { // DEBUG Omit?
+                        _setNewVerse(enteredVerse);
+                      }
+                      _refWasChosen();
+                    });
+                  } else {
+                    /*DEBUG*/print('Invalid refrence: $value');
+                  }
+
+                  // Clear scrollable if needed
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
+                },
+              )
+              :
+              Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
+              ,
+              onPointerDown: (PointerDownEvent details) {
+                if (userIsTyping) {
+                  // Handle Tap
+                  RenderBox? box = _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
+                  if (box != null) {
+                    Offset localPosition = box.globalToLocal(details.position);
+
+                    int offset = _calculateOffset(localPosition);
+
+                    int tappedSection = _getTappedRefSection(_textEntryController.text, offset);
+                    if(tappedSection == 0) {
+                      // Display Book Picker
+                      _showDialog(
+                        // Book Picker:
+                        ScrollPicker(
+                          onChange: (int index) {
+                            setState(() {
+                              _setNewBook(index+1);
+                              _setNewChapter(1); // Reset the chapter to 1 when changing books;
+                              _setNewVerse(0);
+                              _textEntryController.text = getBookName(selectedBookInt) + ' ';
+                              // Move cursor to end of text:
+                              _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+                            });
+                          },
+                          items: getAllBookNames().map((item) => Text(item)).toList(),
+                          initIndex: selectedBookInt-1,
+                        )
+                      );
+                    } else if (tappedSection == 1) {
+                      // Display Book Picker
+                      _showDialog(
+                        // Book Picker:
+                        ScrollPicker(
+                          onChange: (int index) {
+                            setState(() {
+                              int ch = index+1;
+                              _setNewChapter(ch);
+                              _textEntryController.text = getBookName(selectedBookInt) + ' ' + selectedChapter.toString();
+                              // Move cursor to end of text:
+                              _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+                            });
+                          },
+                          items: List<Text>.generate(getNumChapters(selectedBookInt), (index) => Text((index + 1).toString())),
+                          initIndex: selectedChapter-1,
+                        )
+                      );
+                    } else {
+                      print('Yikes! Weird Refrence: tappedSection was ${tappedSection}');
                     }
-                    if (enteredVerse != null) { // DEBUG Omit?
-                      setNewVerse(enteredVerse);
-                      // DEBUG WORKHERE: Fix issue with 3rd John etc. (1-ch books)
-                    }
-                    showPrevRef = true;
-                    /*DEBUG*/print('NewRef updated via text entry to: ${_newReference}');
-                    _refWasChosen();
-                  });
+
+                    _textEntryController.selection = TextSelection.collapsed(offset: offset);
+                  }
                 } else {
-                  /*DEBUG*/print('Invalid refrence: $value');
-                }
-
-                // Clear scrollable if needed
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
+                  // Activate cursor and summon keyboard
+                  _activateTextEntry();
                 }
               },
             )
-            :
-            Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
-            ,
-            onPointerDown: (PointerDownEvent details) {
-              if (userIsTyping) {
-                // Handle Tap
-                RenderBox? box = _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
-                if (box != null) {
-                  Offset localPosition = box.globalToLocal(details.position);
-
-                  int offset = _calculateOffset(localPosition);
-
-                  int tappedSection =_getTappedRefSection(_textEntryController.text, offset);
-                  if(tappedSection == 0) {
-                    /*DEBUG*/print('Book was tapped');
-                    // Display Book Picker
-                    _showDialog(
-                      // Book Picker:
-                      ScrollPicker(
-                        onChange: (int index) {
-                          // /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-                          setState(() {
-                            setNewBook(index+1);
-                            setNewChapter(1); // Reset the chapter to 1 when changing books;
-                            _textEntryController.text = getBookName(selectedBookInt) + ' ';
-                            // Move cursor to end of text
-                            _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-                            /*DEBUG*/print("NewRef Book selected: ${(selectedBookInt).toString()} NewRef is: ${_newReference}");
-                          });
-                        },
-                        items: getAllBookNames().map((item) => Text(item)).toList(),
-                        initIndex: selectedBookInt-1,
-                      )
-                    );
-                  } else if (tappedSection == 1) {
-                    /*DEBUG*/print('Ch was tapped');
-                    // Display Book Picker
-                    _showDialog(
-                      // Book Picker:
-                      ScrollPicker(
-                        onChange: (int index) {
-                          // /*DEBUG*/print('Check1: selectedBookInt=${getBookName(selectedBookInt)} == _currentReference=${getBookName(widget._currentReference.bookNum)}');
-                          setState(() {
-                            int ch = index+1;
-                            setNewChapter(ch);
-                            _textEntryController.text = getBookName(selectedBookInt) + ' ' + selectedChapter.toString();
-                            // Move cursor to end of text
-                            _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-                            /*DEBUG*/print("NewRef Chapter selected: ${(selectedChapter).toString()} NewRef is: ${_newReference}");
-                          });
-                        },
-                        items: List<Text>.generate(getNumChapters(selectedBookInt), (index) => Text((index + 1).toString())),
-                        initIndex: selectedChapter-1,
-                      )
-                    );
-                  } else {
-                    print('Yikes! Weird Refrence: tappedSection was ${tappedSection}');
-                  }
-
-                  _textEntryController.selection = TextSelection.collapsed(offset: offset);
-                }
-              } else {
-                // Activate cursor and summon keyboard
-                _activateTextEntry();
-              }
-            },
           )
         )
         :
         // Refrence Display
         Listener(
-          child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)),
+          child: Text(_reference.toString()),
           onPointerDown: (PointerDownEvent details) {
-            /*DEBUG*/print('MESSAGE');
             _activateTextEntry();
-            // setState(() {
-            //   userIsTyping = true;
-            //   _textEntryFocusNode.requestFocus();
-            //   _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: 0));
-            // });
           },
         )
       )

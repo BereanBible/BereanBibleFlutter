@@ -296,7 +296,7 @@ String getBookName(int bkNum) {
 
 int getNumChapters(int bkNum) {
   int? numOfChapters;
-  numOfChapters = bibleBooks[bibleBooks.keys.elementAt(bkNum)]?['numberOfChapters'];
+  numOfChapters = bibleBooks[bibleBooks.keys.elementAt(bkNum-1)]?['numberOfChapters'];
   return numOfChapters ?? 0;
 }
 

@@ -7,7 +7,20 @@ import 'package:http/http.dart' as http;
 
 Future<BiblePassage> getPassage(BibleReference ref) async {  
   String url = 'https://bible-api.com/';
-  url += getBookName(ref.bookNum) + " " + ref.chapter.toString() + ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : ""); // Format refrence for the API's url schema;
+  // DEBUG WORKHERE: add a check that uses the verse as the chapter if the getNumChapters() returns 1
+  String book4url = getBookName(ref.bookNum);
+  String chapter4url;
+  String verse4url;
+  /*DEBUG*/print('getNumChapters(ref.bookNum) = [${getNumChapters(ref.bookNum)}]');
+  if (getNumChapters(ref.bookNum) == 1) { // Single chapter book
+    chapter4url = ref.chapter.toString();
+    verse4url = ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : "");
+  } else { // Otherwise
+    chapter4url = /*" " +*/ ref.chapter.toString();
+    verse4url = ((ref.verseNum!=0)? (":"+ref.verseNum.toString()) : "");
+  }
+  url += book4url + chapter4url + verse4url; // Format refrence for the API's url schema;
+  /*DEBUG*/print("Fetching for ref=[${ref}] url= [${url}]");
   Map jsonData = await _fetchURL(url);
 
   final verses = <BibleVerse>[];
@@ -29,9 +42,11 @@ Future<Map> _fetchURL(String url) async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return json.decode(response.body);
+  } else if (response.statusCode == 404) {
+    // If the server did not return a 200 OK response, then throw an exception.
+    throw Exception('Invalid refrence');
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
+    // If the server did not return a 200 OK response, then throw an exception.
     throw Exception('Bible source connection error');
   }
 }
