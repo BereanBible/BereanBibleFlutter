@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // For the text buttons
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/bibleUtilFunctions.dart';
@@ -40,15 +41,6 @@ class _RefSelectorState extends State<RefSelector> {
     super.initState();
     _reference = widget._currentReference;
     _newReference = BibleReference(_reference.bookNum, _reference.chapter, _reference.verseNum);
-    // _textEntryFocusNode.addListener(() {
-    //   if (userIsTyping) {
-    //     /*DEBUG*/print('_textEntryFocusNode listener triggered');
-    //     _activateTextEntry();
-    //   } else {
-    //     /*DEBUG*/print('_textEntryFocusNode listener triggered');
-    //     _deactivateTextEntry();
-    //   }
-    // });
   }
 
   @override
@@ -57,7 +49,7 @@ class _RefSelectorState extends State<RefSelector> {
     if (widget._currentReference != oldWidget._currentReference) {
       setState(() {
         _reference = widget._currentReference;
-        _newReference = BibleReference(_reference.bookNum, _reference.chapter, _reference.verseNum);
+        _newReference = BibleReference(_reference.bookNum, _reference.chapter, 0);
       });
     }
   }
@@ -203,6 +195,25 @@ class _RefSelectorState extends State<RefSelector> {
     return sectionIndex;
   }
 
+  String _procBookNames(String b, bool convertToSafe) {
+    if (convertToSafe) {
+      // Convert to space-safe book name
+      return b.replaceAll('1st ', '1')
+        .replaceAll('2nd ', '2')
+        .replaceAll('3rd ', '3')
+        .replaceAll('1 ', '1')
+        .replaceAll('2 ', '2')
+        .replaceAll('3 ', '3');
+    } else {
+      // Convert to proper book name
+      return b.replaceAll('1', '1 ')
+        .replaceAll('2', '2 ')
+        .replaceAll('3', '3 ');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
@@ -222,12 +233,21 @@ class _RefSelectorState extends State<RefSelector> {
               onSubmitted: (String value) {
                 /*DEBUG*/print('Submitted text: $value');
                 // Proccessing input
-                int lastSpace = value.lastIndexOf(' ');
-                if (lastSpace == -1) lastSpace = value.length;
-                String enteredBookStr = value.substring(0, lastSpace);
-                String chAndVerseString = value.substring(lastSpace + 1);
-                // DEBUG: WORKHERE FIRST ^ Need to adjust this to handle both "1 Chron" or "Gen 5" or "1 Chron 5"
-                
+                String spaceSafeInput = _procBookNames(value, true);
+                int lastSpace = spaceSafeInput.lastIndexOf(' ');
+                String enteredBookStr;
+                String chAndVerseString;
+                if (lastSpace == -1 || lastSpace == spaceSafeInput.length - 1) {
+                  // "Book" or "Book "
+                  enteredBookStr = _procBookNames(spaceSafeInput.replaceAll(' ', ''), false);
+                  chAndVerseString = "";
+                } else {
+                  // "Book Ch..."
+                  enteredBookStr = _procBookNames(spaceSafeInput.substring(0, lastSpace), false);
+                  chAndVerseString = spaceSafeInput.substring(lastSpace + 1);
+                }
+                /*DEBUG*/print("enteredBookStr=[${enteredBookStr}] chAndVerseString=[${chAndVerseString}]");
+
                 int? enteredBookNum = getBookNum(enteredBookStr);            
                 int? enteredChapter = null;
                 int? enteredVerse = null; // DEBUG: Remove? Unused?
@@ -251,6 +271,7 @@ class _RefSelectorState extends State<RefSelector> {
                     }
                     if (enteredVerse != null) { // DEBUG Omit?
                       setNewVerse(enteredVerse);
+                      // DEBUG WORKHERE: Fix issue with 3rd John etc. (1-ch books)
                     }
                     showPrevRef = true;
                     /*DEBUG*/print('NewRef updated via text entry to: ${_newReference}');
