@@ -98,9 +98,7 @@ class BibleReferenceNavigatorWrapper extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: Provider.of<MyAppState>(context).readerReference,
       builder: (context, BibleReference value, child) {
-        return OutlineBox(c: CupertinoColors.activeGreen, child: 
-          RefSelector(ref: value, /*DEBUG*/formatStyle: TextStyle(color: CupertinoColors.systemPurple))
-        );/*BibleReferenceNavigator(reference: value);*/
+        return RefSelector(ref: value);/*BibleReferenceNavigator(reference: value);*/
       }
     );
   }

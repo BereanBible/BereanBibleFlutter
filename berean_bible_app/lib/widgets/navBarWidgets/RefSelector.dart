@@ -11,11 +11,9 @@ class RefSelector extends StatefulWidget {
   const RefSelector({
     super.key,
     required BibleReference ref,
-    TextStyle? formatStyle,
-  }) : _currentReference = ref, txtFormatStyle = formatStyle;
+  }) : _currentReference = ref;
 
   final BibleReference _currentReference;
-  final TextStyle? txtFormatStyle;
   
   @override
   _RefSelectorState createState() => _RefSelectorState();
@@ -130,7 +128,7 @@ class _RefSelectorState extends State<RefSelector> {
     if (box != null) {
       double caretPositionFromLeft = localPosition.dx;
 
-      TextSpan span = new TextSpan(style: new TextStyle(color: Colors.black), text: _textEntryController.text);
+      TextSpan span = new TextSpan(style: new TextStyle(color: Colors.white), text: _textEntryController.text);
       TextPainter tp = new TextPainter(text: span, textAlign: TextAlign.left, textDirection: TextDirection.ltr);
       tp.layout(maxWidth: box.size.width);
 
@@ -193,7 +191,7 @@ class _RefSelectorState extends State<RefSelector> {
           margin: const EdgeInsets.all(0), 
           padding: const EdgeInsets.all(0), 
           decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: CupertinoTheme.of(context).scaffoldBackgroundColor), 
+            border: Border.all(width: 1.0, color: Theme.of(context).colorScheme.outline), 
             borderRadius: BorderRadius.circular(10)), 
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -202,8 +200,10 @@ class _RefSelectorState extends State<RefSelector> {
                 key: _textFieldKey,
                 controller: _textEntryController,
                 focusNode: _textEntryFocusNode,
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                 placeholder: (_reference.toString()),
-                cursorColor: CupertinoTheme.of(context).primaryContrastingColor,
+                placeholderStyle: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
+                cursorColor: Theme.of(context).colorScheme.onPrimary,
                 maxLines: 1,
                 onSubmitted: (String value) {
                   // Proccessing input
@@ -260,7 +260,10 @@ class _RefSelectorState extends State<RefSelector> {
                 },
               )
               :
-              Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
+              OutlineBox(c: Colors.purpleAccent, child: 
+                Text('HI')
+                // Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
+              )
               ,
               onPointerDown: (PointerDownEvent details) {
                 if (userIsTyping) {
@@ -326,7 +329,10 @@ class _RefSelectorState extends State<RefSelector> {
         :
         // Refrence Display
         Listener(
-          child: Text(_reference.toString()),
+          child: OutlineBox(c: Colors.blueAccent, child: 
+            Text(_reference.toString()+"HI2"),
+            // Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
+          ),
           onPointerDown: (PointerDownEvent details) {
             _activateTextEntry();
           },
@@ -337,77 +343,6 @@ class _RefSelectorState extends State<RefSelector> {
 }
 
 
-
-
-
-// Text displays
-class RefText extends StatelessWidget {
-  const RefText({
-    super.key,
-    required BibleReference ref,
-    TextStyle? formatStyle,
-  }) : _reference = ref, txtFormatStyle = formatStyle;
-
-  final BibleReference _reference;
-  final TextStyle? txtFormatStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return
-    
-    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      RefBookTitleTxt(ref: _reference, formatStyle: (txtFormatStyle != null) ? txtFormatStyle : null),
-      Text(" ", style: (txtFormatStyle != null) ? txtFormatStyle : TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)),
-      RefChapterNumTxt(ref: _reference, formatStyle: (txtFormatStyle != null) ? txtFormatStyle : null),
-    ]);
-  }
-}
-
-
-
-class RefBookTitleTxt extends StatelessWidget {
-  const RefBookTitleTxt({
-    super.key,
-    required BibleReference ref,
-    TextStyle? formatStyle,
-  }) : _reference = ref, txtFormatStyle = formatStyle;
-
-  final BibleReference _reference;
-  final TextStyle? txtFormatStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      getBookName(_reference.bookNum),
-      style: (
-        (txtFormatStyle != null) ? txtFormatStyle : 
-        TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)
-      ),
-    );
-  }
-}
-
-class RefChapterNumTxt extends StatelessWidget {
-  const RefChapterNumTxt({
-    super.key,
-    required BibleReference ref,
-    TextStyle? formatStyle,
-  }) : _reference = ref, txtFormatStyle = formatStyle;
-
-  final BibleReference _reference;
-  final TextStyle? txtFormatStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      _reference.chapter.toString(),
-      style: (
-        (txtFormatStyle != null) ? txtFormatStyle : 
-        TextStyle(color: CupertinoTheme.of(context).primaryContrastingColor)
-      ),
-    );
-  }
-}
 
 class ScrollPicker extends StatelessWidget {
 
@@ -437,5 +372,32 @@ class ScrollPicker extends StatelessWidget {
       },
       children: items,
     );
+  }
+}
+
+
+
+// Text display
+
+class RefText extends StatelessWidget {
+  const RefText({
+    super.key,
+    required BibleReference ref,
+    TextStyle? formatStyle,
+  }) : _reference = ref, txtFormatStyle = formatStyle;
+
+  final BibleReference _reference;
+  final TextStyle? txtFormatStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        "${getBookName(_reference.bookNum)} ${_reference.chapter.toString()}", 
+        style: TextStyle(
+          color: Color.fromARGB(255, 183, 255, 0) // Theme.of(context).colorScheme.onPrimary
+        )
+      ),
+    ]);
   }
 }

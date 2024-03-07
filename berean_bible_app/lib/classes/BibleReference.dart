@@ -9,7 +9,6 @@ class BibleReference {
 
   @override
   String toString() {
-    // TODO: implement toString
     String strForm = getBookName(bookNum) + " " + chapter.toString() + ((verseNum!=0)? (":"+verseNum.toString()) : "");
     return strForm;
   }

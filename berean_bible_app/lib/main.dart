@@ -1,10 +1,12 @@
 import 'package:berean_bible_app/widgets/navBarWidgets/NavBar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/pages/BibleReaderPage.dart';
 import 'package:berean_bible_app/pages/MarginEditorPage.dart';
 import 'package:berean_bible_app/classes/BibleReference.dart';
+import 'package:berean_bible_app/classes/BereanThemes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,14 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
-      child: CupertinoApp(
+      child: MaterialApp(
         title: 'Berean Bible App',
-        theme: CupertinoThemeData(
-          primaryColor: CupertinoColors.black,
-          primaryContrastingColor: CupertinoColors.white,
-          barBackgroundColor: CupertinoColors.black,
-          scaffoldBackgroundColor: Color.fromARGB(200, 30, 30, 30),
-        ),
+        theme: appThemeMain,
         home: MyHomePage(title: 'Berean Bible Home Page'),
       ),
     );
@@ -121,4 +118,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
+} // MyAppState

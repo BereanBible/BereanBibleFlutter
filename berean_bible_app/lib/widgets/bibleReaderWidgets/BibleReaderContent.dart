@@ -2,6 +2,7 @@ import 'package:berean_bible_app/classes/BiblePassage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/functions/getPassageFunction.dart';
+import 'package:flutter/material.dart';
 
 class BibleReaderContent extends StatefulWidget {
   final BibleReference reference;
@@ -61,7 +62,7 @@ class _BibleReaderContentState extends State<BibleReaderContent> with AutomaticK
                     child: Padding(padding: EdgeInsets.all(15.0),
                       child: Wrap(
                         children: <Widget>[
-                          Text(snapshot.data.toString())
+                          Text(snapshot.data.toString(), style: Theme.of(context).textTheme.bodyMedium,)
                         ]
                       )
                     )
