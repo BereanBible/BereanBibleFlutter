@@ -248,115 +248,122 @@ class _RefSelectorState extends State<RefSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.center, children: <Widget>[
+    return Container(
+      constraints: BoxConstraints(maxWidth: 200), 
+      child: Stack(
+        alignment: Alignment.center, 
+        
+        children: <Widget>[
 
-      // Text Entry:
-      Container(
-        margin: const EdgeInsets.all(0), 
-        padding: const EdgeInsets.all(0), 
-        decoration: BoxDecoration(
-          border: Border.all(width: 1.0, color: Theme.of(context).colorScheme.outline), 
-          borderRadius: BorderRadius.circular(10)), 
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Listener(child:
-            CupertinoTextField(
-              key: _textFieldKey,
-              controller: _textEntryController,
-              focusNode: _textEntryFocusNode,
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-              placeholder: (_reference.toString()),
-              placeholderStyle: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
-              cursorColor: Theme.of(context).colorScheme.onPrimary,
-              maxLines: 1,
-              onSubmitted: (String value) {
-                _proccessTextInput();
-              },
-            ),
-            onPointerDown: (PointerDownEvent details) {
-              // Handle Tap
-              RenderBox? box = _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
-              if (box != null) {
-                Offset localPosition = box.globalToLocal(details.position);
-
-                int offset = _calculateOffset(localPosition);
-
-                int tappedSection = _getTappedRefSection(_textEntryController.text, offset);
-                if(tappedSection == 0) {
-                  // Display Book Picker
-                  _showDialog(
-                    // Book Picker:
-                    ScrollPicker(
-                      onChange: (int index) {
-                        setState(() {
-                          _setNewBook(index+1);
-                          _setNewChapter(1); // Reset the chapter to 1 when changing books;
-                          _setNewVerse(0);
-                          _textEntryController.text = getBookName(selectedBookInt) + ' ';
-                          // Move cursor to end of text:
-                          _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-                        });
-                      },
-                      items: getAllBookNames().map((item) => Text(item)).toList(),
-                      initIndex: selectedBookInt-1,
-                    )
-                  );
-                } else if (tappedSection == 1) {
-                  // Display Book Picker
-                  _showDialog(
-                    // Book Picker:
-                    ScrollPicker(
-                      onChange: (int index) {
-                        setState(() {
-                          int ch = index+1;
-                          _setNewChapter(ch);
-                          _textEntryController.text = getBookName(selectedBookInt) + ' ' + selectedChapter.toString();
-                          // Move cursor to end of text:
-                          _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
-                        });
-                      },
-                      items: List<Text>.generate(getNumChapters(selectedBookInt), (index) => Text((index + 1).toString())),
-                      initIndex: selectedChapter-1,
-                    )
-                  );
-                } else {
-                  print('Yikes! Weird Refrence: tappedSection was ${tappedSection}');
-                }
-
-                _textEntryController.selection = TextSelection.collapsed(offset: offset);
-              }
-            },
-          )
-        )
-      ),
- 
-      Positioned.fill(child:
-      AbsorbPointer(absorbing:false, child: GestureDetector(
-        onTap: () {},
-        child: 
-          Visibility(
-            visible: !userIsTyping,
-            replacement: Container(margin: const EdgeInsets.all(0), padding: const EdgeInsets.all(0)),
-            child:  
-              // Reference Display:
-              Listener(
-                child: OutlineBox(c: Colors.purple, child: 
-                  Container(color: Colors.green.withOpacity(0.5),// Theme.of(context).colorScheme.primary, 
-                    alignment: Alignment.center,
-                    child: 
-                      Text(_reference.toString()+" _r.5.6", style: TextStyle(color: Colors.orangeAccent),),
-                      // Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
-                  )            
+          // Text Entry:
+          Container(
+            margin: const EdgeInsets.all(0), 
+            padding: const EdgeInsets.all(0), 
+            decoration: BoxDecoration(
+              border: Border.all(width: 1.0, color: Theme.of(context).colorScheme.outline), 
+              borderRadius: BorderRadius.circular(10)), 
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Listener(child:
+                CupertinoTextField(
+                  key: _textFieldKey,
+                  controller: _textEntryController,
+                  focusNode: _textEntryFocusNode,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                  placeholder: (_reference.toString()),
+                  placeholderStyle: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
+                  cursorColor: Theme.of(context).colorScheme.onPrimary,
+                  maxLines: 1,
+                  onSubmitted: (String value) {
+                    _proccessTextInput();
+                  },
                 ),
                 onPointerDown: (PointerDownEvent details) {
-                  _activateTextEntry();
-                },
-              ),
-          )
-      ))
-      )
+                  // Handle Tap
+                  RenderBox? box = _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
+                  if (box != null) {
+                    Offset localPosition = box.globalToLocal(details.position);
 
-    ]);
+                    int offset = _calculateOffset(localPosition);
+
+                    int tappedSection = _getTappedRefSection(_textEntryController.text, offset);
+                    if(tappedSection == 0) {
+                      // Display Book Picker
+                      _showDialog(
+                        // Book Picker:
+                        ScrollPicker(
+                          onChange: (int index) {
+                            setState(() {
+                              _setNewBook(index+1);
+                              _setNewChapter(1); // Reset the chapter to 1 when changing books;
+                              _setNewVerse(0);
+                              _textEntryController.text = getBookName(selectedBookInt) + ' ';
+                              // Move cursor to end of text:
+                              _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+                            });
+                          },
+                          items: getAllBookNames().map((item) => Text(item)).toList(),
+                          initIndex: selectedBookInt-1,
+                        )
+                      );
+                    } else if (tappedSection == 1) {
+                      // Display Book Picker
+                      _showDialog(
+                        // Book Picker:
+                        ScrollPicker(
+                          onChange: (int index) {
+                            setState(() {
+                              int ch = index+1;
+                              _setNewChapter(ch);
+                              _textEntryController.text = getBookName(selectedBookInt) + ' ' + selectedChapter.toString();
+                              // Move cursor to end of text:
+                              _textEntryController.selection = TextSelection.fromPosition(TextPosition(offset: _textEntryController.text.length));
+                            });
+                          },
+                          items: List<Text>.generate(getNumChapters(selectedBookInt), (index) => Text((index + 1).toString())),
+                          initIndex: selectedChapter-1,
+                        )
+                      );
+                    } else {
+                      print('Yikes! Weird Refrence: tappedSection was ${tappedSection}');
+                    }
+
+                    _textEntryController.selection = TextSelection.collapsed(offset: offset);
+                  }
+                },
+              )
+            )
+          ),
+    
+          Positioned.fill(child:
+          AbsorbPointer(absorbing:false, child: GestureDetector(
+            onTap: () {},
+            child: 
+              Visibility(
+                visible: !userIsTyping,
+                replacement: Container(margin: const EdgeInsets.all(0), padding: const EdgeInsets.all(0)),
+                child:  
+                  // Reference Display:
+                  Listener(
+                    child: OutlineBox(c: Colors.purple, child: 
+                      Container(color: Colors.green.withOpacity(0.5),// Theme.of(context).colorScheme.primary, 
+                        alignment: Alignment.center,
+                        child: 
+                          Text(_reference.toString()+" _r.5.6", style: TextStyle(color: Colors.orangeAccent),),
+                          // Container(child: RefText(ref: _reference, formatStyle: TextStyle(color: CupertinoColors.activeOrange)))
+                      )            
+                    ),
+                    onPointerDown: (PointerDownEvent details) {
+                      _activateTextEntry();
+                    },
+                  ),
+              )
+          ))
+          )
+
+        ]
+      )
+    );
   }
 }
 
