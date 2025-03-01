@@ -15,10 +15,8 @@ const appColors_main = const ColorScheme(
   outline: Color.fromARGB(255, 126, 126, 126),
   error: Color.fromARGB(255, 255, 162, 0),
   onError: Color.fromARGB(255, 184, 0, 0),
-  background: Color.fromARGB(200, 30, 30, 30),
-  onBackground: Color.fromARGB(255, 197, 181, 255),
-  surface: Color.fromARGB(255, 255, 79, 79),
-  onSurface: Color.fromARGB(255, 6, 188, 0),
+  surface: Color.fromARGB(200, 30, 30, 30),
+  onSurface: Color.fromARGB(255, 197, 181, 255),
   // background: 200, 30, 30, 30
 );
 

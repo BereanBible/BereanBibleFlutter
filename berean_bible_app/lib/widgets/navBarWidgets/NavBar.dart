@@ -47,7 +47,9 @@ class _NavBarState extends State<NavBar> {
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 leading: MarginFolderButton(),
                 middle: Row(
-                  children: [MarginTitle(), BibleReferenceNavigatorWrapper()]
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // WORKHERE: fix spacing of desktop nav bar elements
+                  children: [MarginTitle(), Flexible(fit: FlexFit.loose, child: BibleReferenceNavigatorWrapper())]
                 ),
                 trailing: SettingsButton(),
               );
