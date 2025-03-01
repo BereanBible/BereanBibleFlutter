@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 
 const appColors_main = const ColorScheme(
   brightness: Brightness.dark,
-  primary: Color.fromARGB(255, 150, 145, 0),
+  primary: Color.fromARGB(255, 0, 0, 0),
   onPrimary: Color.fromARGB(255, 75, 255, 237),
   secondary: Color.fromARGB(255, 0, 147, 132),
   onSecondary: Color.fromARGB(255, 114, 75, 255),

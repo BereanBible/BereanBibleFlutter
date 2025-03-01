@@ -1,6 +1,7 @@
 import 'package:berean_bible_app/classes/BibleReference.dart';
 import 'package:berean_bible_app/widgets/navBarWidgets/MarginTitle.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'; // For the text buttons & theme
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:berean_bible_app/main.dart';
@@ -35,7 +36,7 @@ class _NavBarState extends State<NavBar> {
             if (sizingInformation.deviceScreenType != DeviceScreenType.desktop) {
               // Main Mobile View
               return CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 leading: LeftButton(),
                 middle: TopNavBarTitle(),
                 trailing: SettingsButton(),
@@ -43,7 +44,7 @@ class _NavBarState extends State<NavBar> {
             } else {
               // Desktop View
               return CupertinoNavigationBar(
-                backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 leading: MarginFolderButton(),
                 middle: Row(
                   children: [MarginTitle(), BibleReferenceNavigatorWrapper()]
@@ -110,7 +111,7 @@ class SettingsButton extends StatelessWidget {
     return CupertinoButton(
       child: Icon(
         CupertinoIcons.settings, 
-        color: CupertinoTheme.of(context).primaryContrastingColor
+        color: Theme.of(context).colorScheme.onPrimary
       ),
       onPressed: () {
         print("Settings Button Pressed");
@@ -125,7 +126,7 @@ class MarginFolderButton extends StatelessWidget {
     return CupertinoButton(
       child: Icon(
         CupertinoIcons.folder_circle,
-        color: CupertinoTheme.of(context).primaryContrastingColor,
+        color: Theme.of(context).colorScheme.onPrimary,
       ),
       onPressed: () {
         print("MarginFolderPressed");
@@ -140,7 +141,7 @@ class BibleAaButton extends StatelessWidget {
     return CupertinoButton(
       child: Icon(
         CupertinoIcons.textformat,
-        color: CupertinoTheme.of(context).primaryContrastingColor,
+        color: Theme.of(context).colorScheme.onPrimary,
       ), 
       onPressed: () {
         print("BibleAaButton pressed");
